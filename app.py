@@ -13,17 +13,27 @@ def createApp():
 
     action = None
     res = None
-    while action != 'e':
-        action = input().lower()
-        if action == 'l':
-            res = log_in.log(con)
+    try:
+        while action != 'e':
+            action = input().lower()
+            if action == 'l':
+                res = log_in.log(con)
 
-        elif action == 's':
-            res = sign_up.sign(con)
-        else:
-            print('Please type \'S\' (sign up), \'L\' (log in) or \'E\' (exit)')
+            elif action == 's':
+                res = sign_up.sign(con)
+            else:
+                print('Please type \'S\' (sign up), \'L\' (log in) or \'E\' (exit)')
 
-        if res == -1:
-            print('-------------------------------')
-            print('You have been redirected to the home page')
-            print('Please type \'S\' (sign up), \'L\' (log in) or \'E\' (exit)')
+            if res == -1:
+                print('-------------------------------')
+                print('You have been redirected to the home page')
+                print('Please type \'S\' (sign up), \'L\' (log in) or \'E\' (exit)')
+
+        # User wants to exit, and we close the connection with the database
+        con.closeConnection()
+        return 0
+
+    except KeyboardInterrupt:
+        # We close the connection with the database
+        #con.closeConnection()
+        return -1

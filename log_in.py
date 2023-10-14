@@ -1,5 +1,6 @@
 import time
 import forums_menu
+from getpass import getpass
 
 
 def log(con):

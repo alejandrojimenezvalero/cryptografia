@@ -38,3 +38,16 @@ class dbConnection():
         consult = "INSERT INTO Messages (Data, id_user, id_forum) VALUES (%s, %s, %s)"
         cursor.execute(consult, data)
         self.con.commit()
+
+    def findUser(self, email):
+        cursor = self.con.cursor()
+        query = "SELECT * FROM User WHERE Email = %s"
+        cursor.execute(query, (email,))
+        result = cursor.fetchall()
+        if len(result) > 0:
+            return True
+        else:
+            return False
+
+    def findForum(self, forum_name):
+        pass
