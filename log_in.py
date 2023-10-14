@@ -15,6 +15,7 @@ def log(con):
 
         # Check if the email is in the DB and if not tell de user that he has to sign up
 
+
         if con.findUser(email):
             print('Please enter your password:')
             while c > 0:
