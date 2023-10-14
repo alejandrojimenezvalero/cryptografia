@@ -6,7 +6,9 @@ def start(con, email):
     # First we have to show all the Forums the user has access to
     while True:
         print('You have access to the following forums:\n')
+
         # We show the forums
+        forum_list = con.showForums(email)
 
         print('What do you want to do?\n'
               + '1. If you want to access a forum, please type !access\n'
@@ -19,7 +21,7 @@ def start(con, email):
 
             action_forum = input().lower()
             if action_forum == '!access':
-                res = forums_actions.access(con)
+                res = forums_actions.access(con, forum_list)
             elif action_forum == '!create':
                 res = forums_actions.create(con)
             elif action_forum != '!exit':

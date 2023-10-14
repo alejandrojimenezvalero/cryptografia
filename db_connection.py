@@ -59,4 +59,43 @@ class dbConnection():
             return None
 
     def findForum(self, forum_name):
-        pass
+        cursor = self.con.cursor()
+        query = "SELECT * FROM Forums WHERE Name = %s"
+        cursor.execute(query, (forum_name,))
+        result = cursor.fetchall()
+        if len(result) > 0:
+            return True
+        else:
+            return False
+
+    def showForums(self, email):
+        mycursor = self.con.cursor()
+
+        forum_list = []
+
+        # We get the id from the user
+        mycursor.execute("SELECT id_user FROM User WHERE Email = %s", (email,))
+        id_user = mycursor.fetchone()
+
+        # Verify if the user exists
+        if id_user:
+            # We get the id's of the forums the user has access to
+            mycursor.execute("SELECT id_forum FROM UsersForums WHERE id_user = %s", (id_user[0],))
+            id_forums = mycursor.fetchall()
+
+            if id_forums:
+                # We get the forums names
+                for forum_id in id_forums:
+                    mycursor.execute("SELECT Name FROM Forums WHERE id_forum = %s", (forum_id[0],))
+                    forum_name = mycursor.fetchone()
+                    if forum_name:
+                        print(f"Forum name: {forum_name[0]}")
+                        forum_list.append(forum_name)
+            else:
+                print("You don\'t belong to any forum")
+                return 0
+        else:
+            print(f"There's no id associated to the email: {email}.")
+            return 0
+
+        return forum_list
