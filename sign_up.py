@@ -1,5 +1,5 @@
 import re
-
+import cipher
 
 def sign(con):
     print('You are now trying to sign up, if u want exit, please type \'!exit\'')
@@ -28,15 +28,23 @@ def sign(con):
         if not email:
             pass1, pass2 = None, None
             while pass1 != pass2:
-                print('Password:')
+                print('Enter the password for your account (it must contain at least 1 mayus, 1 digit, '
+                      '1 of the following symbols ($,%,&,@) :')
                 pass1 = input()
-                print('Repeat your password:')
+                while not(re.match(r'^(?=.*[A-Z])(?=.*\d)(?=.*[$%&@])[A-Za-z\d$%&@]{8,}$'), pass1):
+
+                    if not(re.match(r'^(?=.*[A-Z])(?=.*\d)(?=.*[$%&@])[A-Za-z\d$%&@]{8,}$'), pass1):
+                        print("Your password doesn\'t match required standards")
+                    pass1 = input()
+
+                print('Confirm your password:')
                 pass2 = input()
                 if pass1 != pass2:
                     print('The passwords doesn\'t match')
                 else:
                     # We encode the password
-
+                    # We are going to use Fernet for symetric encription
+                    cipher.password_encryption(pass1)
                     # We leave the while pass1 != pass2 loop
                     break
             # We leave the while True loop
