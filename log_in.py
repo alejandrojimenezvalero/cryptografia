@@ -1,5 +1,6 @@
 import time
 import forums_menu
+import cipher
 from getpass import getpass
 
 
@@ -14,14 +15,15 @@ def log(con):
 
         # Check if the email is in the DB and if not tell de user that he has to sign up
 
-        if email:
+        if con.findUser(email):
             print('Please enter your password:')
             while c > 0:
                 password = input()
 
                 # Check if the password is correct
+                db_password = cipher.password_decryption(con.findPassword(email))
 
-                if password:
+                if password == db_password:
                     forums_menu.start(con, email)
                     return -1
                 else:
@@ -33,6 +35,5 @@ def log(con):
             time.sleep(5)
             return -1
         else:
-            print('Please enter your email:')
-
-    return -1
+            print('User doesn\'t exist')
+        return -1

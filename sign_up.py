@@ -2,6 +2,7 @@ import re
 import cipher
 
 
+
 def sign(con):
     print('You are now trying to sign up, if u want exit, please type \'!exit\'')
 
@@ -10,11 +11,10 @@ def sign(con):
 
     print('Second Name: ')
     sec_name = input()
+    print('Email: ')
+    email = input()
+    while email != '!exit':
 
-    while True:
-
-        print('Email: ')
-        email = input()
         # We check if the email follow the regular expression
         regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
 
@@ -51,7 +51,11 @@ def sign(con):
             # We leave the while True loop
             break
         else:
-            print('Sorry that email name is already in use')
+            print('Sorry that email name is already in use, you should try log in, type !exit to go back')
+            print('Email: ')
+        email = input()
+    return -1
+
 
     data = [name, sec_name, email, ciphered_password]
     con.insertUser(data)

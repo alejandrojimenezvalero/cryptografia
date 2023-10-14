@@ -11,11 +11,10 @@ def createApp():
     # We establish connection with the database
     con = dbConnection()
 
-    action = None
+    action = input().lower()
     res = None
     try:
         while action != 'e':
-            action = input().lower()
             if action == 'l':
                 res = log_in.log(con)
 
@@ -28,6 +27,7 @@ def createApp():
                 print('-------------------------------')
                 print('You have been redirected to the home page')
                 print('Please type \'S\' (sign up), \'L\' (log in) or \'E\' (exit)')
+            action = input().lower()
 
         # User wants to exit, and we close the connection with the database
         con.closeConnection()

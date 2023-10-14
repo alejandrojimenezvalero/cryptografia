@@ -48,6 +48,15 @@ class dbConnection():
             return True
         else:
             return False
+    def findPassword(self, email):
+        cursor = self.con.cursor()
+        query = "SELECT Password FROM User WHERE Email = %s"
+        cursor.execute(query, (email,))
+        result = cursor.fetchall()[0][0]
+        if len(result) > 0:
+            return result
+        else:
+            return None
 
     def findForum(self, forum_name):
         pass
