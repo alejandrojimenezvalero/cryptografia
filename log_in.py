@@ -16,13 +16,13 @@ def log(con):
         # Check if the email is in the DB and if not tell de user that he has to sign up
 
 
-        if con.findUser(email):
+        if con.fetchUser(email):
             print('Please enter your password:')
             while c > 0:
                 password = input()
 
                 # Check if the password is correct
-                db_password = cipher.password_decryption(con.findPassword(email))
+                db_password = cipher.password_decryption(con.fetchPasswordUser(email))
 
                 if password == db_password:
                     forums_menu.start(con, email)

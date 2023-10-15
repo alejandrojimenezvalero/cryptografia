@@ -3,45 +3,48 @@ import re
 import cipher
 
 
-def access(con, forum_list):
+def access(con, email, forum_list):
     while True:
         print('Please, enter the  name of the forum you want to access')
         forum_name = input()
 
         # We check if the user belongs to the forum
-        if forum_name in forum_list:
-            print('Please, enter your password:')
-            c = 3
-            # We check if the password is correct
-            while c > 0:
-
-                password = input()
-
-                # Check if the password is correct
-
-                if password:
-                    res = forum_chat.start(con, forum_name)
-                    # You went out the live_chat, and you are going back to the forum menu
-                    return res
-                else:
-                    c -= 1
-                    print('Wrong password, please try again:')
-            # We break the while True loop because of a wrong password, and you log_out
-            break
-
-        else:
+        if forum_name not in forum_list:
             print('You don\'t have access to the forum' + forum_name)
+
+        print('Please, enter your password:')
+        c = 3
+        # We check if the password is correct
+        while c > 0:
+
+            password = input()
+
+            # Check if the password is correct
+            db_password = cipher.password_decryption(con.fetchPasswordForum(forum_name))
+
+            if password == db_password:
+                if forum_name not in forum_list:
+                    con.joinUserForum(email, forum_name)
+                res = forum_chat.start(con, forum_name)
+                # You went out the live_chat, and you are going back to the forum menu
+                return res
+            else:
+                c -= 1
+                print('Wrong password, please try again:')
+        # We break the while True loop because of a wrong password, and you log_out
+        break
+
     return -1
 
 
-def create(con):
+def create(con, email):
     forum_data = []
     while True:
         print('Please, enter the  name of the forum you want to create:')
         forum_name = input()
 
         # We check if the name is already in use
-        if not con.findForum(forum_name):
+        if not con.fetchForum(forum_name):
             print('Create the password of the forum:')
 
             pass1, pass2 = 0, 1
@@ -74,6 +77,6 @@ def create(con):
 
     # We create the forum
 
-    con.insertForum(forum_data)
+    con.insertForum(forum_data, email)
     print('Forum has been created successfully')
     return 1

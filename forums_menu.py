@@ -21,9 +21,9 @@ def start(con, email):
 
             action_forum = input().lower()
             if action_forum == '!access':
-                res = forums_actions.access(con, forum_list)
+                res = forums_actions.access(con, email, forum_list)
             elif action_forum == '!create':
-                res = forums_actions.create(con)
+                res = forums_actions.create(con, email)
             elif action_forum != '!exit':
                 print('Please use !access, !create or !exit')
 

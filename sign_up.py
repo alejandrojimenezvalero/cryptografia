@@ -26,7 +26,7 @@ def sign(con):
 
         # We check if the email is already in use
 
-        if not con.findUser(email):
+        if not con.fetchUser(email):
             pass1, pass2 = 0, 1
             while pass1 != pass2:
                 print('Enter the password for your account (it must contain at least 1 mayus, 1 digit, '
@@ -54,11 +54,10 @@ def sign(con):
             print('Sorry that email name is already in use, you should try log in, type !exit to go back')
             print('Email: ')
         email = input()
-    return -1
 
+    if email != '!exit':
+        data = [name, sec_name, email, ciphered_password]
+        con.insertUser(data)
 
-    data = [name, sec_name, email, ciphered_password]
-    con.insertUser(data)
-
-    print('Account has been created successfully')
+        print('Account has been created successfully')
     return -1
