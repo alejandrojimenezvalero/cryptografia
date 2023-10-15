@@ -19,6 +19,15 @@ class dbConnection():
         self.con.close()
         return 0
 
+    def update0(self, mutex):
+        """This function is used to update in certain contexts of the execution"""
+        mutex.acquire()
+        try:
+            self.con.commit()
+        finally:
+            mutex.release()
+        return 0
+
     def insertUser(self, data):
         """We insert a user in the database"""
         cursor = self.con.cursor()
@@ -36,12 +45,16 @@ class dbConnection():
         self.joinUserForum(email, data[0])
         return 0
 
-    def insertMsg(self, data):
+    def insertMessage(self, data, mutex):
         """We insert the message a user sent to a forum"""
-        cursor = self.con.cursor()
-        consult = "INSERT INTO Messages (Data, id_user, id_forum) VALUES (%s, %s, %s)"
-        cursor.execute(consult, data)
-        self.con.commit()
+        mutex.acquire()
+        try:
+            cursor = self.con.cursor()
+            consult = "INSERT INTO Messages (Data, id_user, id_forum) VALUES (%s, %s, %s)"
+            cursor.execute(consult, data)
+            self.con.commit()
+        finally:
+            mutex.release()
         return 0
 
     def joinUserForum(self, email, forum_name):
@@ -123,7 +136,6 @@ class dbConnection():
 
             if id_forums:
                 # We get the forums names
-                print('hola')
                 for forum_id in id_forums:
                     cursor.execute("SELECT Name FROM Forums WHERE id_forum = %s", (forum_id[0],))
                     forum_name = cursor.fetchone()[0]
@@ -132,33 +144,55 @@ class dbConnection():
                         forum_list.append(forum_name)
             else:
                 print("You don\'t belong to any forum")
-                return 0
         else:
             print(f"There's no id associated to the email: {email}.")
             return 0
 
         return forum_list
 
-    def showMessages(self, forum_name, n_msg=None):
-        cursor = self.con.cursor()
+    def showMessages(self, forum_name, mutex):
+        """We get all the messages of the forum and who wrote them"""
+        mutex.acquire()
+        try:
+            cursor = self.con.cursor()
 
-
-        if n_msg == None:
             cursor.execute("SELECT id_forum FROM Forums WHERE Name = %s", (forum_name,))
             forum_id = cursor.fetchone()[0]
 
-            # Consulta para obtener el mensaje, el nombre y el segundo nombre del usuario
+            # We get the name and second name of the user who wrote the message
             query = ("SELECT m.Data, u.Name, u.Second_Name "
                      "FROM Messages m "
                      "JOIN User u ON m.id_user = u.id_user "
                      "WHERE m.id_forum = %s")
             cursor.execute(query, (forum_id,))
             result = cursor.fetchall()
+        finally:
+            mutex.release()
 
-            return result
-        pass
+        return result
 
+    def consultIdUser(self, email, mutex):
+        mutex.acquire()
+        try:
+            cursor = self.con.cursor()
+            cursor.execute("SELECT id_user FROM User WHERE Email = %s", (email,))
+            user_id = cursor.fetchone()[0]
+        finally:
+            mutex.release()
 
+        return user_id
+
+    def consultIdForum(self, forum_name, mutex):
+        mutex.acquire()
+        try:
+            cursor = self.con.cursor()
+
+            cursor.execute("SELECT id_forum FROM Forums WHERE Name = %s", (forum_name,))
+            forum_id = cursor.fetchone()[0]
+        finally:
+            mutex.release()
+
+        return forum_id
 """
 def fetch_data(self, table, condition_column, condition_value):
     "Función genérica para recuperar datos de la base de datos"

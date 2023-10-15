@@ -27,7 +27,7 @@ def access(con, email, forum_list):
             if password == db_password:
                 if forum_name not in forum_list:
                     con.joinUserForum(email, forum_name)
-                res = forum_chat.start(con, forum_name)
+                res = forum_chat.start(con, email, forum_name)
                 # You went out the live_chat, and you are going back to the forum menu
                 return res
             else:

@@ -9,10 +9,10 @@ def is_int(value):
         return False
 
 
-def start(con, forum_name):
+def start(con, email, forum_name):
 
     # We check the number of messages of the forum
-
+    """
     print('There are x messages on the forum: ' + forum_name)
     print('How many messages you want to see?: ')
     num_msg = None
@@ -25,6 +25,6 @@ def start(con, forum_name):
             break
 
     # We show the number of messages the user asked for
-
-    res = live_chat.chat(con, forum_name)
+    """
+    res = live_chat.chat(con, email, forum_name)
     return res
