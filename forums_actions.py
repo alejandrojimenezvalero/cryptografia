@@ -9,6 +9,8 @@ def access(con, email, forum_list):
         forum_name = input()
 
         # We check if the user belongs to the forum
+        print(forum_name)
+        print(forum_list)
         if forum_name not in forum_list:
             print('You don\'t have access to the forum' + forum_name)
 

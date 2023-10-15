@@ -8,7 +8,9 @@ print('Welcome ')
 def showBdMessages(con, forum_name):
     print("Showing the new messages of the forum...")
     while True:
-        pass
+        if len(con.showMessages(forum_name)) != 0:
+            print(con.showMessages(forum_name))
+
 
 
 def waitUserMessage(con, forum_name):
@@ -19,8 +21,8 @@ def waitUserMessage(con, forum_name):
 
 
 def chat(con, forum_name):
-    show_messages_thread = threading.Thread(target=showBdMessages, args=(forum_name, con,))
-    wait_messages_thread = threading.Thread(target=waitUserMessage, args=(forum_name, con,))
+    show_messages_thread = threading.Thread(target=showBdMessages, args=(con, forum_name,))
+    wait_messages_thread = threading.Thread(target=waitUserMessage, args=(con, forum_name,))
 
     # Start threads
     show_messages_thread.start()

@@ -107,28 +107,28 @@ class dbConnection():
 
     def showForums(self, email):
         """We show all the forums the user has access to"""
-        mycursor = self.con.cursor()
+        cursor = self.con.cursor()
 
         forum_list = []
 
         # We get the id from the user
-        mycursor.execute("SELECT id_user FROM User WHERE Email = %s", (email,))
-        id_user = mycursor.fetchone()
+        cursor.execute("SELECT id_user FROM User WHERE Email = %s", (email,))
+        id_user = cursor.fetchone()
 
         # Verify if the user exists
         if id_user:
             # We get the id's of the forums the user has access to
-            mycursor.execute("SELECT id_forum FROM UsersForums WHERE id_user = %s", (id_user[0],))
-            id_forums = mycursor.fetchall()
+            cursor.execute("SELECT id_forum FROM UsersForums WHERE id_user = %s", (id_user[0],))
+            id_forums = cursor.fetchall()
 
             if id_forums:
                 # We get the forums names
                 print('hola')
                 for forum_id in id_forums:
-                    mycursor.execute("SELECT Name FROM Forums WHERE id_forum = %s", (forum_id[0],))
-                    forum_name = mycursor.fetchone()
+                    cursor.execute("SELECT Name FROM Forums WHERE id_forum = %s", (forum_id[0],))
+                    forum_name = cursor.fetchone()[0]
                     if forum_name:
-                        print(f"Forum name: {forum_name[0]}")
+                        print(f"Forum name: {forum_name}")
                         forum_list.append(forum_name)
             else:
                 print("You don\'t belong to any forum")
@@ -139,8 +139,25 @@ class dbConnection():
 
         return forum_list
 
-    def showMessages(self, email, forum_name, n_msg):
+    def showMessages(self, forum_name, n_msg=None):
+        cursor = self.con.cursor()
+
+
+        if n_msg == None:
+            cursor.execute("SELECT id_forum FROM Forums WHERE Name = %s", (forum_name,))
+            forum_id = cursor.fetchone()[0]
+
+            # Consulta para obtener el mensaje, el nombre y el segundo nombre del usuario
+            query = ("SELECT m.Data, u.Name, u.Second_Name "
+                     "FROM Messages m "
+                     "JOIN User u ON m.id_user = u.id_user "
+                     "WHERE m.id_forum = %s")
+            cursor.execute(query, (forum_id,))
+            result = cursor.fetchall()
+
+            return result
         pass
+
 
 """
 def fetch_data(self, table, condition_column, condition_value):
