@@ -5,7 +5,7 @@ def start(con, email):
 
     # First we have to show all the Forums the user has access to
     while True:
-        print('You have access to the following forums:\n')
+        print('You have access to the following forums:')
 
         # We show the forums
         forum_list = con.showForums(email)

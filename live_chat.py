@@ -1,12 +1,5 @@
 import threading
 import time
-import colorama
-from colorama import init, Fore, Style
-init()
-
-
-print('Welcome ')
-
 
 def showBdMessages(con, forum_name, mutex):
     print("Showing the new messages of the forum...")
@@ -16,9 +9,8 @@ def showBdMessages(con, forum_name, mutex):
         db_messages = con.showMessages(forum_name, mutex)
         for (message, name, second_name) in db_messages:
             if (message, name, second_name) not in shown_messages:
-                print(f"{name} {second_name}: {message}")
+                print(f"{name} {second_name}: {message}\n")
                 shown_messages.add((message, name, second_name))
-
 
 
 def waitUserMessage(con, email, forum_name, mutex):
@@ -26,7 +18,7 @@ def waitUserMessage(con, email, forum_name, mutex):
     while True:
         # We add a time.sleep of 0.1 seconds, so it doesn't interrupt any
         #time.sleep(2)
-        message = input("-> ")
+        message = input()
         if message.lower() == "!exit":
             break
         id_user = con.consultIdUser(email, mutex)

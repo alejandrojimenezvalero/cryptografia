@@ -1,37 +1,38 @@
 from cryptography.fernet import Fernet
 import hmac
 import hashlib
+import base64
 
-def initialize_password():
-    key = b'GX0wOFAFYIohW8EIKfIyc0c4w-NMQg5nT2cDqr7zeHk='
-    cipher_suite = Fernet(key)
+def initialize_password(key):
+    key_32_bytes = hashlib.sha256(key.encode()).digest()
+    encoded_key = base64.urlsafe_b64encode(key_32_bytes)
+    cipher_suite = Fernet(encoded_key)
     return cipher_suite
 
 
-def password_encryption(password):
-    # we generate the key
-    # we create out a Fernet object
-    cipher_suite = initialize_password()
-    # to convert plain text to cipher text
+def password_encryption(password, key):
+    cipher_suite = initialize_password(key)
     encrypted_pass = cipher_suite.encrypt(password.encode()).decode()
     return encrypted_pass
 
 
-def password_decryption(encrypted_value):
-    cipher_suite = initialize_password()
-    decrypted_value = cipher_suite.decrypt(encrypted_value).decode()
+def password_decryption(encrypted_value, key):
+    cipher_suite = initialize_password(key)
+    decrypted_value = cipher_suite.decrypt(encrypted_value.encode()).decode()
     return decrypted_value
 
 
-def initialize_msg(message):
-    # Generar una clave secreta aleatoria de 32 bytes (256 bits)
-    key = b"0y\xb8\x811r\xa4U\xadv\xa1\xf8\x08HL\x87\xbb\x93g\xddY\xe5\x14\xcfZ'\x06\x0c\xd7\x14\xa8E"
+def initialize_msg(message, key):
+    # We use the password of the Forum as a key to encrypt the message
+    #key = b"0y\xb8\x811r\xa4U\xadv\xa1\xf8\x08HL\x87\xbb\x93g\xddY\xe5\x14\xcfZ'\x06\x0c\xd7\x14\xa8E"
+    key_32_bytes = hashlib.sha256(key.encode()).digest()
+    encoded_key = base64.urlsafe_b64encode(key_32_bytes)
     encoded_message = message.encode()
-    return key, encoded_message
+    return encoded_key, encoded_message
 
 
 def encrypt_message(message):
-    """We use this function when we wan to send an authenticated message"""
+    """We use this function when we want to send an authenticated message"""
     k, encoded_message = initialize_msg(message)
     # Crear el HMAC utilizando SHA-256
     hmac_obj = hmac.new(k, digestmod=hashlib.sha256)

@@ -22,7 +22,7 @@ def log(con):
                 password = input()
 
                 # Check if the password is correct
-                db_password = cipher.password_decryption(con.fetchPasswordUser(email))
+                db_password = cipher.password_decryption(con.fetchPasswordUser(email), password)
 
                 if password == db_password:
                     forums_menu.start(con, email)

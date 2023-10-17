@@ -45,7 +45,7 @@ def sign(con):
                 else:
                     # We encode the password
                     # We are going to use Fernet for symetric encription
-                    ciphered_password = cipher.password_encryption(pass1)
+                    ciphered_password = cipher.password_encryption(pass1, pass1)
                     # We leave the while pass1 != pass2 loop
                     break
             # We leave the while True loop
