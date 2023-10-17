@@ -4,13 +4,17 @@ import time
 def showBdMessages(user, mutex):
     print("Showing the new messages of the forum...")
     shown_messages = set()
+    last_shown_index = 0
     while True:
+        time.sleep(0.01)
         user.connectionDb.update0(mutex)
         db_messages = user.connectionDb.showMessages(user.usingForum, mutex)
-        for (message, name, second_name) in db_messages:
+        for i in range(last_shown_index, len(db_messages)):
+            message, name, second_name = db_messages[i]
             if (message, name, second_name) not in shown_messages:
                 print(f"{name} {second_name}: {message}\n")
                 shown_messages.add((message, name, second_name))
+        last_shown_index = len(db_messages)
 
 
 def waitUserMessage(user, mutex):
