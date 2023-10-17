@@ -1,19 +1,19 @@
 import threading
 import time
 
-def showBdMessages(con, forum_name, mutex):
+def showBdMessages(user, mutex):
     print("Showing the new messages of the forum...")
     shown_messages = set()
     while True:
-        con.update0(mutex)
-        db_messages = con.showMessages(forum_name, mutex)
+        user.connectionDb.update0(mutex)
+        db_messages = user.connectionDb.showMessages(user.usingForum, mutex)
         for (message, name, second_name) in db_messages:
             if (message, name, second_name) not in shown_messages:
                 print(f"{name} {second_name}: {message}\n")
                 shown_messages.add((message, name, second_name))
 
 
-def waitUserMessage(con, email, forum_name, mutex):
+def waitUserMessage(user, mutex):
     time.sleep(1)
     while True:
         # We add a time.sleep of 0.1 seconds, so it doesn't interrupt any
@@ -21,16 +21,16 @@ def waitUserMessage(con, email, forum_name, mutex):
         message = input()
         if message.lower() == "!exit":
             break
-        id_user = con.consultIdUser(email, mutex)
-        id_forum = con.consultIdForum(forum_name, mutex)
+        id_user = user.connectionDb.consultIdUser(user.email, mutex)
+        id_forum = user.connectionDb.consultIdForum(user.usingForum, mutex)
         data = [message, id_user, id_forum]
-        con.insertMessage(data, mutex)
+        user.connectionDb.insertMessage(data, mutex)
 
-def chat(con, email, forum_name):
+def chat(user):
     mutex = threading.Lock()
 
-    show_messages_thread = threading.Thread(target=showBdMessages, args=(con, forum_name, mutex, ))
-    wait_messages_thread = threading.Thread(target=waitUserMessage, args=(con, email, forum_name, mutex, ))
+    show_messages_thread = threading.Thread(target=showBdMessages, args=(user, mutex, ))
+    wait_messages_thread = threading.Thread(target=waitUserMessage, args=(user, mutex, ))
 
     # Start threads
     show_messages_thread.start()

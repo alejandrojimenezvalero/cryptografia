@@ -8,20 +8,11 @@ class User:
         self._con = dbConnection()
         self._email = None
         self._usingForum = None
-        self._cypherKeyLog = None
         self._cypherKeyForum = None
 
     @property
     def connectionDb(self):
         return self._con
-
-    @property
-    def cypherKeyLog(self):
-        return self._cypherKeyLog
-
-    @cypherKeyLog.setter
-    def cypherKeyLog(self, key):
-        self._cypherKeyLog = key
 
     @property
     def cypherKeyForum(self):

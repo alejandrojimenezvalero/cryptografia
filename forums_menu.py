@@ -1,14 +1,14 @@
 import forums_actions
 
 
-def start(con, email):
+def start(user):
 
     # First we have to show all the Forums the user has access to
     while True:
         print('You have access to the following forums:')
 
         # We show the forums
-        forum_list = con.showForums(email)
+        forum_list = user.connectionDb.showForums(user.email)
 
         print('What do you want to do?\n'
               + '1. If you want to access a forum, please type !access\n'
@@ -21,9 +21,9 @@ def start(con, email):
 
             action_forum = input().lower()
             if action_forum == '!access':
-                res = forums_actions.access(con, email, forum_list)
+                res = forums_actions.access(user, forum_list)
             elif action_forum == '!create':
-                res = forums_actions.create(con, email)
+                res = forums_actions.create(user)
             elif action_forum != '!exit':
                 print('Please use !access, !create or !exit')
 

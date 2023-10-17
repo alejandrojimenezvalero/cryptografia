@@ -3,7 +3,7 @@ import re
 import cipher
 
 
-def access(con, email, forum_list):
+def access(user, forum_list):
     while True:
         print('Please, enter the  name of the forum you want to access')
         forum_name = input()
@@ -20,12 +20,14 @@ def access(con, email, forum_list):
             password = input()
 
             # Check if the password is correct
-            db_password = cipher.password_decryption(con.fetchPasswordForum(forum_name))
+            db_password = cipher.password_decryption(user.connectionDb.fetchPasswordForum(forum_name), password)
 
             if password == db_password:
                 if forum_name not in forum_list:
-                    con.joinUserForum(email, forum_name)
-                res = forum_chat.start(con, email, forum_name)
+                    user.connectionDb.joinUserForum(user.email, forum_name)
+                # We save the forum were the user will be sending messages
+                user.usingForum = forum_name
+                res = forum_chat.start(user)
                 # You went out the live_chat, and you are going back to the forum menu
                 return res
             else:
@@ -37,14 +39,14 @@ def access(con, email, forum_list):
     return -1
 
 
-def create(con, email):
+def create(user):
     forum_data = []
     while True:
         print('Please, enter the  name of the forum you want to create:')
         forum_name = input()
 
         # We check if the name is already in use
-        if not con.fetchForum(forum_name):
+        if not user.connectionDb.fetchForum(forum_name):
             print('Create the password of the forum:')
 
             pass1, pass2 = 0, 1
@@ -66,7 +68,7 @@ def create(con, email):
                 else:
                     # We encode the password
                     # We are going to use Fernet for symetric encription
-                    ciphered_password = cipher.password_encryption(pass1)
+                    ciphered_password = cipher.password_encryption(pass1, pass1)
                     forum_data = [forum_name, ciphered_password]
                     # We leave the while pass1 != pass2 loop
                     break
@@ -77,6 +79,6 @@ def create(con, email):
 
     # We create the forum
 
-    con.insertForum(forum_data, email)
+    user.connectionDb.insertForum(forum_data, user.email)
     print('Forum has been created successfully')
     return 1

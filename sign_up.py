@@ -5,7 +5,7 @@ import cipher
 
 def sign(user):
     print('You are now trying to sign up, if u want exit, please type \'!exit\'')
-
+    data = None
     print('Name: ')
     name = input()
 
@@ -13,6 +13,7 @@ def sign(user):
     sec_name = input()
     print('Email: ')
     user.email = input()
+
     while user.email != '!exit':
 
         # We check if the email follow the regular expression
@@ -26,7 +27,7 @@ def sign(user):
 
         # We check if the email is already in use
 
-        if not user.connectionDb.fetchUser(email):
+        if not user.connectionDb.fetchUser(user.email):
             pass1, pass2 = 0, 1
             while pass1 != pass2:
                 print('Enter the password for your account (it must contain at least 1 mayus, 1 digit, '
@@ -46,6 +47,7 @@ def sign(user):
                     # We encode the password
                     # We are going to use Fernet for symetric encription
                     ciphered_password = cipher.password_encryption(pass1, pass1)
+                    data = [name, sec_name, user.email, ciphered_password]
                     # We leave the while pass1 != pass2 loop
                     break
             # We leave the while True loop
@@ -53,11 +55,11 @@ def sign(user):
         else:
             print('Sorry that email name is already in use, you should try log in, type !exit to go back')
             print('Email: ')
-        email = input()
+        user.email = input()
 
-    if email != '!exit':
-        data = [name, sec_name, email, ciphered_password]
-        con.insertUser(data)
+    if user.email != '!exit':
+
+        user.connectionDb.insertUser(data)
 
         print('Account has been created successfully')
     return -1
