@@ -1,31 +1,29 @@
 import time
 import forums_menu
 import cipher
-from getpass import getpass
 
 
-def log(con):
+def log(user):
     print('You are now trying to log in, if u want exit, please type \'!exit\'')
     # We add a counter to so that the user can only try the password 3 times
     c = 3
-    email = None
-    while email != '!exit':
+    while user.email != '!exit':
         print('Please enter your email:')
-        email = input().lower()
+        user.email = input().lower()
 
         # Check if the email is in the DB and if not tell de user that he has to sign up
 
 
-        if con.fetchUser(email):
+        if user.connectionDb.fetchUser(user.email):
             print('Please enter your password:')
             while c > 0:
                 password = input()
 
                 # Check if the password is correct
-                db_password = cipher.password_decryption(con.fetchPasswordUser(email), password)
+                db_password = cipher.password_decryption(user.connectionDb.fetchPasswordUser(user.email), password)
 
                 if password == db_password:
-                    forums_menu.start(con, email)
+                    forums_menu.start(user)
                     return -1
                 else:
                     c -= 1

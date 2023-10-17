@@ -1,4 +1,4 @@
-from db_connection import dbConnection
+from user_log import User
 import log_in
 import sign_up
 
@@ -9,17 +9,17 @@ def createApp():
           + '3. If you want to Exit, please type \'E\'\n')
 
     # We establish connection with the database
-    con = dbConnection()
+    user = User()
 
     action = input().lower()
     res = None
     try:
         while action != 'e':
             if action == 'l':
-                res = log_in.log(con)
+                res = log_in.log(user)
 
             elif action == 's':
-                res = sign_up.sign(con)
+                res = sign_up.sign(user)
             else:
                 print('Please type \'S\' (sign up), \'L\' (log in) or \'E\' (exit)')
 
@@ -30,10 +30,10 @@ def createApp():
             action = input().lower()
 
         # User wants to exit, and we close the connection with the database
-        con.closeConnection()
+        user.connectionDb.closeConnection()
         return 0
 
     except KeyboardInterrupt:
         # We close the connection with the database
-        #con.closeConnection()
+        user.connectionDb.closeConnection()
         return -1

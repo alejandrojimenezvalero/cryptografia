@@ -3,7 +3,7 @@ import cipher
 
 
 
-def sign(con):
+def sign(user):
     print('You are now trying to sign up, if u want exit, please type \'!exit\'')
 
     print('Name: ')
@@ -12,21 +12,21 @@ def sign(con):
     print('Second Name: ')
     sec_name = input()
     print('Email: ')
-    email = input()
-    while email != '!exit':
+    user.email = input()
+    while user.email != '!exit':
 
         # We check if the email follow the regular expression
         regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
 
-        while not re.match(regex, email):
-            if not re.match(regex, email):
+        while not re.match(regex, user.email):
+            if not re.match(regex, user.email):
                 print('The email doesn\'t follow the required parameters')
                 print('Email:')
-            email = input()
+            user.email = input()
 
         # We check if the email is already in use
 
-        if not con.fetchUser(email):
+        if not user.connectionDb.fetchUser(email):
             pass1, pass2 = 0, 1
             while pass1 != pass2:
                 print('Enter the password for your account (it must contain at least 1 mayus, 1 digit, '
