@@ -28,8 +28,12 @@ def data_encryption(password, key):
 
 def data_decryption(encrypted_value, key):
     cipher_suite = initialize_data(key)
-    decrypted_data = cipher_suite.decrypt(encrypted_value.encode()).decode()
-    return decrypted_data
+    try:
+        decrypted_data = cipher_suite.decrypt(encrypted_value.encode()).decode()
+        return decrypted_data
+    except:
+        return -1
+
 
 
 def initialize_msg(message, key):
@@ -48,7 +52,7 @@ def auth_message(message, key, stored_hmac):
         return 0
     else:
         return -1
-def generate_hmac(key, message):
+def generate_hmac(message, key):
     k, encoded_message = initialize_msg(message, key)
     # We create an HMAC with the message
     hmac_receptor = hmac.new(k, digestmod=hashlib.sha256)

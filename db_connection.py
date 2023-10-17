@@ -150,7 +150,7 @@ class dbConnection():
 
         return forum_list
 
-    def showMessages(self, forum_name, mutex):
+    def getMessages(self, forum_name, mutex):
         """We get all the messages of the forum and who wrote them"""
         mutex.acquire()
         try:

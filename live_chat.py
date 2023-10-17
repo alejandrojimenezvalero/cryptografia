@@ -8,11 +8,11 @@ def showBdMessages(user, mutex):
     while True:
         time.sleep(0.01)
         user.connectionDb.update0(mutex)
-        db_messages = user.connectionDb.showMessages(user.usingForum, mutex)
+        db_messages = user.connectionDb.getMessages(user.usingForum, mutex)
         for i in range(last_shown_index, len(db_messages)):
             encrypted_message, stored_hmac, name, second_name = db_messages[i]
             message = cipher.data_decryption(encrypted_message, user.cypherKeyForum)
-            res = cipher.auth_message(message, user.cypherKeyForum, stored_hmac.encode())
+            res = cipher.auth_message(message, user.cypherKeyForum, stored_hmac)
             if res == 0:
                 if (message, stored_hmac, name, second_name) not in shown_messages:
                     print(f"{name} {second_name}: {message}\n")
@@ -34,9 +34,10 @@ def waitUserMessage(user, mutex):
             break
         id_user = user.connectionDb.consultIdUser(user.email, mutex)
         id_forum = user.connectionDb.consultIdForum(user.usingForum, mutex)
-        # Before we insert the message we cipher it and we authenticate it
-        message_encrypted = cipher.data_encryption(message,user.cypherKeyForum)
-        hmac_value = cipher.generate_hmac(message,user.cypherKeyForum)
+        # Before we insert the message we cipher it and we generate HMAC
+        hmac_value = cipher.generate_hmac(message, user.cypherKeyForum)
+        print(user)
+        message_encrypted = cipher.data_encryption(message, user.cypherKeyForum)
         data = [message_encrypted, hmac_value, id_user, id_forum]
         user.connectionDb.insertMessage(data, mutex)
 
