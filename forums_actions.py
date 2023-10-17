@@ -20,13 +20,14 @@ def access(user, forum_list):
             password = input()
 
             # Check if the password is correct
-            db_password = cipher.password_decryption(user.connectionDb.fetchPasswordForum(forum_name), password)
+            db_password = cipher.data_decryption(user.connectionDb.fetchPasswordForum(forum_name), password)
 
             if password == db_password:
                 if forum_name not in forum_list:
                     user.connectionDb.joinUserForum(user.email, forum_name)
                 # We save the forum were the user will be sending messages
                 user.usingForum = forum_name
+                user.cypherKeyForum = password
                 res = forum_chat.start(user)
                 # You went out the live_chat, and you are going back to the forum menu
                 return res

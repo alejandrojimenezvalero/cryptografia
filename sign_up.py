@@ -1,6 +1,4 @@
-import re
 import cipher
-
 
 
 def sign(user):
@@ -33,11 +31,7 @@ def sign(user):
                 print('Enter the password for your account (it must contain at least 1 mayus, 1 digit, '
                       '1 of the following symbols ($,%,&,@) :')
                 pass1 = input()
-                while not(re.match(r'^(?=.*[A-Z])(?=.*\d)(?=.*[$%&@])[A-Za-z\d$%&@]{8,}$', pass1)):
-
-                    if not(re.match(r'^(?=.*[A-Z])(?=.*\d)(?=.*[$%&@])[A-Za-z\d$%&@]{8,}$', pass1)):
-                        print("Your password doesn\'t match required standards")
-                    pass1 = input()
+                pass1 = cipher.check_password(pass1)
 
                 print('Confirm your password:')
                 pass2 = input()
@@ -46,7 +40,7 @@ def sign(user):
                 else:
                     # We encode the password
                     # We are going to use Fernet for symetric encription
-                    ciphered_password = cipher.password_encryption(pass1, pass1)
+                    ciphered_password = cipher.data_encryption(pass1, pass1)
                     data = [name, sec_name, user.email, ciphered_password]
                     # We leave the while pass1 != pass2 loop
                     break

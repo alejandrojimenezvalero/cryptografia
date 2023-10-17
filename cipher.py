@@ -2,6 +2,16 @@ from cryptography.fernet import Fernet
 import hmac
 import hashlib
 import base64
+import re
+
+
+def check_password(pass1):
+    while not (re.match(r'^(?=.*[A-Z])(?=.*\d)(?=.*[$%&@])[A-Za-z\d$%&@]{8,}$', pass1)):
+
+        if not (re.match(r'^(?=.*[A-Z])(?=.*\d)(?=.*[$%&@])[A-Za-z\d$%&@]{8,}$', pass1)):
+            print("Your password doesn\'t match required standards")
+        pass1 = input()
+    return pass1
 
 def initialize_data(key):
     key_32_bytes = hashlib.sha256(key.encode()).digest()
@@ -29,29 +39,19 @@ def initialize_msg(message, key):
     encoded_message = message.encode()
     return encoded_key, encoded_message
 
-
-def auth_send_message(message, key):
-    """We use this function when we want to send an authenticated message"""
-    k, encoded_message = initialize_msg(message, key)
-    # We generate HMAC object using sha-226 algorithm
-    hmac_obj = hmac.new(k, digestmod=hashlib.sha256)
-    # Update to HMAC object with the message as an argument
-    hmac_obj.update(encoded_message)
-    # We obtain HMAC value
-    valor_hmac = hmac_obj.digest()
-    # We encrypt the message to storage it ciphered in the database
-    return valor_hmac
-
-def auth_received_message(message, stored_hmac):
+def auth_message(message, key, stored_hmac):
     """We use this function when we received an authenticated message"""
-    k, encoded_message = initialize_msg(message)
-    # We create an HMAC with the message
-    hmac_receptor = hmac.new(k, digestmod=hashlib.sha256)
-    hmac_receptor.update(encoded_message)
+    hmac_value = generate_hmac(key, message)
     # Check if the HMAC stored is equal to the HMAC of the actual message in order to see if it has been manipulated
-    if hmac.compare_digest(stored_hmac, hmac_receptor.digest()):
+    if hmac.compare_digest(stored_hmac, hmac_value):
         # In this case the message has not been manipulated
         return 0
     else:
-        print("This message is no longer available, it has been manipulated")
         return -1
+def generate_hmac(key, message):
+    k, encoded_message = initialize_msg(message, key)
+    # We create an HMAC with the message
+    hmac_receptor = hmac.new(k, digestmod=hashlib.sha256)
+    hmac_receptor.update(encoded_message)
+    hmac_value = hmac_receptor.digest()
+    return hmac_value

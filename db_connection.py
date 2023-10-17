@@ -50,7 +50,7 @@ class dbConnection():
         mutex.acquire()
         try:
             cursor = self.con.cursor()
-            consult = "INSERT INTO Messages (Data, id_user, id_forum) VALUES (%s, %s, %s)"
+            consult = "INSERT INTO Messages (Message, hmac_value, id_user, id_forum) VALUES (%s, %s, %s, %s)"
             cursor.execute(consult, data)
             self.con.commit()
         finally:
@@ -160,7 +160,7 @@ class dbConnection():
             forum_id = cursor.fetchone()[0]
 
             # We get the name and second name of the user who wrote the message
-            query = ("SELECT m.Data, u.Name, u.Second_Name "
+            query = ("SELECT m.Message, m.hmac_value, u.Name, u.Second_Name "
                      "FROM Messages m "
                      "JOIN User u ON m.id_user = u.id_user "
                      "WHERE m.id_forum = %s")
