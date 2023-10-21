@@ -69,7 +69,7 @@ def create(user):
                 else:
                     # We encode the password
                     # We are going to use Fernet for symetric encription
-                    ciphered_password = cipher.password_encryption(pass1, pass1)
+                    ciphered_password = cipher.data_encryption(pass1, pass1)
                     forum_data = [forum_name, ciphered_password]
                     # We leave the while pass1 != pass2 loop
                     break
