@@ -1,4 +1,5 @@
 import cipher
+import re
 
 
 def sign(user):

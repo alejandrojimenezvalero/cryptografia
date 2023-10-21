@@ -3,13 +3,20 @@ import log_in
 import sign_up
 
 def createApp():
+
+    print('Would you like to chat online or localhost?')
+    option = input()
+    while option != 'online' and option != 'localhost':
+        print('Please, type \'localhost\' or \'online\'')
+        option = input()
+
     print('Welcome ForumLand, what do you want to do?\n'
           + '1. If you want to Sign Up, please type \'S\'\n'
           + '2. If you want to Log In, please type \'L\'\n'
           + '3. If you want to Exit, please type \'E\'\n')
 
     # We establish connection with the database
-    user = User()
+    user = User(option)
 
     action = input().lower()
     res = None

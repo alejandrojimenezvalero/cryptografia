@@ -4,8 +4,8 @@ from db_connection import dbConnection
 
 class User:
 
-    def __init__(self):
-        self._con = dbConnection()
+    def __init__(self, option):
+        self._con = dbConnection(option)
         self._email = None
         self._usingForum = None
         self._cypherKeyForum = None

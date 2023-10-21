@@ -1,18 +1,31 @@
 import os
 import mysql.connector
+import sqlite3
 
 
 class dbConnection():
 
-    def __init__(self):
-        password = os.getenv('MYSQL_PASSWORD')
-        con = mysql.connector.connect(
-            host="sql11.freesqldatabase.com",
-            user="sql11653150",
-            password=password,
-            database="sql11653150"
-        )
-        self.con = con
+    def __init__(self, option):
+        # We add this self.option parameter because some querys have differences between qlite3 and mysql-connector
+        self.option = option
+        if self.option == 'localhost':
+            self.con = sqlite3.connect('local_database.db', check_same_thread=False)
+        elif self.option == 'online':
+
+            password = os.getenv('MYSQL_PASSWORD')
+            self.con = mysql.connector.connect(
+                host="sql11.freesqldatabase.com",
+                user="sql11653150",
+                password=password,
+                database="sql11653150"
+            )
+
+    def selectQuery(self, query):
+        if self.option == 'localhost':
+            return query.replace('@', '?')
+        elif self.option == 'online':
+            return query.replace('@', '%s')
+
 
     def closeConnection(self):
         """We close connection with the database"""
@@ -31,16 +44,16 @@ class dbConnection():
     def insertUser(self, data):
         """We insert a user in the database"""
         cursor = self.con.cursor()
-        consult = "INSERT INTO User (Name, Second_Name, Email, Password) VALUES (%s, %s, %s, %s)"
-        cursor.execute(consult, data)
+        query = self.selectQuery("INSERT INTO User (Name, Second_Name, Email, Password) VALUES (@, @, @, @)")
+        cursor.execute(query, data)
         self.con.commit()
         return 0
 
     def insertForum(self, data, email):
         """We insert a Forum in the database"""
         cursor = self.con.cursor()
-        consult = "INSERT INTO Forums (Name, Password) VALUES (%s, %s)"
-        cursor.execute(consult, data)
+        query = self.selectQuery("INSERT INTO Forums (Name, Password) VALUES (@, @)")
+        cursor.execute(query, data)
         self.con.commit()
         self.joinUserForum(email, data[0])
         return 0
@@ -50,8 +63,8 @@ class dbConnection():
         mutex.acquire()
         try:
             cursor = self.con.cursor()
-            consult = "INSERT INTO Messages (Message, hmac_value, id_user, id_forum) VALUES (%s, %s, %s, %s)"
-            cursor.execute(consult, data)
+            query = self.selectQuery("INSERT INTO Messages (Message, id_user, id_forum) VALUES (@, @, @)")
+            cursor.execute(query, data)
             self.con.commit()
         finally:
             mutex.release()
@@ -61,15 +74,15 @@ class dbConnection():
         """We add the relationship User-Forum"""
 
         cursor = self.con.cursor()
-        cursor.execute("SELECT id_user FROM User WHERE Email = %s", (email,))
+        cursor.execute(self.selectQuery("SELECT id_user FROM User WHERE Email = @"), (email,))
         id_user = cursor.fetchone()[0]
 
-        cursor.execute("SELECT id_forum FROM Forums WHERE Name = %s", (forum_name,))
+        cursor.execute(self.selectQuery("SELECT id_forum FROM Forums WHERE Name = @"), (forum_name,))
         id_forum = cursor.fetchone()[0]
 
-        consult = "INSERT INTO UsersForums (id_user, id_forum) VALUES (%s, %s)"
+        query = self.selectQuery("INSERT INTO UsersForums (id_user, id_forum) VALUES (@, @)")
         data = [id_user, id_forum]
-        cursor.execute(consult, data)
+        cursor.execute(query, data)
 
         self.con.commit()
         return 0
@@ -77,7 +90,7 @@ class dbConnection():
     def fetchUser(self, email):
         """We check if a user exists or not"""
         cursor = self.con.cursor()
-        query = "SELECT * FROM User WHERE Email = %s"
+        query = self.selectQuery("SELECT * FROM User WHERE Email = @")
         cursor.execute(query, (email,))
         result = cursor.fetchall()
         if len(result) > 0:
@@ -88,7 +101,7 @@ class dbConnection():
     def fetchPasswordUser(self, email):
         """We fetch the password of the user"""
         cursor = self.con.cursor()
-        query = "SELECT Password FROM User WHERE Email = %s"
+        query = self.selectQuery("SELECT Password FROM User WHERE Email = @")
         cursor.execute(query, (email,))
         result = cursor.fetchall()[0][0]
         if len(result) > 0:
@@ -99,7 +112,7 @@ class dbConnection():
     def fetchForum(self, forum_name):
         """We fetch if a forum exists or not"""
         cursor = self.con.cursor()
-        query = "SELECT * FROM Forums WHERE Name = %s"
+        query = self.selectQuery("SELECT * FROM Forums WHERE Name = @")
         cursor.execute(query, (forum_name,))
         result = cursor.fetchall()
         if len(result) > 0:
@@ -110,7 +123,7 @@ class dbConnection():
     def fetchPasswordForum(self, forum_name):
         """We fetch the password of the forum"""
         cursor = self.con.cursor()
-        query = "SELECT Password FROM Forums WHERE Name = %s"
+        query = self.selectQuery("SELECT Password FROM Forums WHERE Name = @")
         cursor.execute(query, (forum_name,))
         result = cursor.fetchall()[0][0]
         if len(result) > 0:
@@ -125,19 +138,19 @@ class dbConnection():
         forum_list = []
 
         # We get the id from the user
-        cursor.execute("SELECT id_user FROM User WHERE Email = %s", (email,))
+        cursor.execute(self.selectQuery("SELECT id_user FROM User WHERE Email = @"), (email,))
         id_user = cursor.fetchone()
 
         # Verify if the user exists
         if id_user:
             # We get the id's of the forums the user has access to
-            cursor.execute("SELECT id_forum FROM UsersForums WHERE id_user = %s", (id_user[0],))
+            cursor.execute(self.selectQuery("SELECT id_forum FROM UsersForums WHERE id_user = @"), (id_user[0],))
             id_forums = cursor.fetchall()
 
             if id_forums:
                 # We get the forums names
                 for forum_id in id_forums:
-                    cursor.execute("SELECT Name FROM Forums WHERE id_forum = %s", (forum_id[0],))
+                    cursor.execute(self.selectQuery("SELECT Name FROM Forums WHERE id_forum = @"), (forum_id[0],))
                     forum_name = cursor.fetchone()[0]
                     if forum_name:
                         print(f"Forum name: {forum_name}")
@@ -156,14 +169,14 @@ class dbConnection():
         try:
             cursor = self.con.cursor()
 
-            cursor.execute("SELECT id_forum FROM Forums WHERE Name = %s", (forum_name,))
+            cursor.execute(self.selectQuery("SELECT id_forum FROM Forums WHERE Name = @"), (forum_name,))
             forum_id = cursor.fetchone()[0]
 
             # We get the name and second name of the user who wrote the message
-            query = ("SELECT m.Message, m.hmac_value, u.Name, u.Second_Name "
-                     "FROM Messages m "
-                     "JOIN User u ON m.id_user = u.id_user "
-                     "WHERE m.id_forum = %s")
+            query = self.selectQuery("SELECT m.Message, u.Name, u.Second_Name "
+                                     "FROM Messages m "
+                                     "JOIN User u ON m.id_user = u.id_user "
+                                     "WHERE m.id_forum = @")
             cursor.execute(query, (forum_id,))
             result = cursor.fetchall()
         finally:
@@ -175,7 +188,7 @@ class dbConnection():
         mutex.acquire()
         try:
             cursor = self.con.cursor()
-            cursor.execute("SELECT id_user FROM User WHERE Email = %s", (email,))
+            cursor.execute(self.selectQuery("SELECT id_user FROM User WHERE Email = @"), (email,))
             user_id = cursor.fetchone()[0]
         finally:
             mutex.release()
@@ -187,7 +200,7 @@ class dbConnection():
         try:
             cursor = self.con.cursor()
 
-            cursor.execute("SELECT id_forum FROM Forums WHERE Name = %s", (forum_name,))
+            cursor.execute(self.selectQuery("SELECT id_forum FROM Forums WHERE Name = @"), (forum_name,))
             forum_id = cursor.fetchone()[0]
         finally:
             mutex.release()
@@ -197,7 +210,7 @@ class dbConnection():
 def fetch_data(self, table, condition_column, condition_value):
     "Función genérica para recuperar datos de la base de datos"
     cursor = self.con.cursor()
-    query = f"SELECT * FROM {table} WHERE {condition_column} = %s"
+    query = f"SELECT * FROM {table} WHERE {condition_column} = @"
     cursor.execute(query, (condition_value,))
     result = cursor.fetchall()
     if len(result) > 0:
