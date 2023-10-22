@@ -5,13 +5,26 @@ import base64
 import re
 
 
-def check_password(pass1):
-    while not (re.match(r'^(?=.*[A-Z])(?=.*\d)(?=.*[$%&@])[A-Za-z\d$%&@]{8,}$', pass1)):
-
-        if not (re.match(r'^(?=.*[A-Z])(?=.*\d)(?=.*[$%&@])[A-Za-z\d$%&@]{8,}$', pass1)):
-            print("Your password doesn\'t match required standards")
+def check_password(pass1, pass2):
+    while pass1 != pass2:
+        print('Enter the password (it must contain at least 1 mayus, 1 digit, '
+              '1 of the following symbols ($,%,&,@) :')
         pass1 = input()
-    return pass1
+        while not (re.match(r'^(?=.*[A-Z])(?=.*\d)(?=.*[$%&@])[A-Za-z\d$%&@]{8,}$', pass1)) and pass1 != '!exit':
+
+            if not (re.match(r'^(?=.*[A-Z])(?=.*\d)(?=.*[$%&@])[A-Za-z\d$%&@]{8,}$', pass1)):
+                print("Your password doesn\'t match required standards")
+            pass1 = input()
+
+        if pass1 == '!exit':
+            return -1
+
+        print('Confirm your password:')
+        pass2 = input()
+        if pass1 != pass2:
+            print('The passwords doesn\'t match')
+        else:
+            return pass1
 
 def initialize_data(key):
     key_32_bytes = hashlib.sha256(key.encode()).digest()
