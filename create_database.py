@@ -5,7 +5,7 @@ con = sqlite3.connect('local_database.db')
 cursor = con.cursor()
 
 cursor.execute('DROP TABLE IF EXISTS User')
-cursor.execute('DROP TABLE IF EXISTS Forum')
+cursor.execute('DROP TABLE IF EXISTS Forums')
 cursor.execute('DROP TABLE IF EXISTS UsersForums')
 cursor.execute('DROP TABLE IF EXISTS Messages')
 

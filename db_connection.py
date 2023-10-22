@@ -45,7 +45,7 @@ class dbConnection():
         """We insert a user in the database"""
         try:
             cursor = self.con.cursor()
-            query = self.selectQuery("INSERT INTO User (Name, Second_Name, Email, Password) VALUES (@, @, @, @)")
+            query = self.selectQuery("INSERT INTO User (Name, Second_Name, Email, Password, Salt) VALUES (@, @, @, @, @)")
             cursor.execute(query, data)
             self.con.commit()
             return 0
@@ -58,7 +58,8 @@ class dbConnection():
         """We insert a Forum in the database"""
         try:
             cursor = self.con.cursor()
-            query = self.selectQuery("INSERT INTO Forums (Name, Password) VALUES (@, @)")
+            query = self.selectQuery("INSERT INTO Forums (Name, Password, Salt) VALUES (@, @, @)")
+            print(query, data)
             cursor.execute(query, data)
             self.con.commit()
             self.joinUserForum(email, data[0])
@@ -118,6 +119,16 @@ class dbConnection():
             return result
         else:
             return None
+    def fetchUserSalt(self, email):
+        """We fetch the password's salt of the user"""
+        cursor = self.con.cursor()
+        query = self.selectQuery("SELECT Salt FROM User WHERE Email = @")
+        cursor.execute(query, (email,))
+        result = cursor.fetchall()[0][0]
+        if len(result) > 0:
+            return result
+        else:
+            return None
 
     def fetchForum(self, forum_name):
         """We fetch if a forum exists or not"""
@@ -141,6 +152,16 @@ class dbConnection():
         else:
             return None
 
+    def fetchForumSalt(self, forum_name ):
+        """We fetch the password' salt of the forum"""
+        cursor = self.con.cursor()
+        query = self.selectQuery("SELECT Salt FROM Forums WHERE Name = @")
+        cursor.execute(query, (forum_name,))
+        result = cursor.fetchall()[0][0]
+        if len(result) > 0:
+            return result
+        else:
+            return None
     def showForums(self, email):
         """We show all the forums the user has access to"""
         cursor = self.con.cursor()

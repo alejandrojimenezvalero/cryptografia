@@ -27,9 +27,9 @@ def access(user, forum_list):
         while c > 0:
 
             password = input()
-
+            salt = cipher.decode_salt(user.connectionDb.fetchForumSalt(forum_name))
             # Check if the password is correct
-            db_password = cipher.data_decryption(user.connectionDb.fetchPasswordForum(forum_name), password)
+            db_password = cipher.data_decryption(user.connectionDb.fetchPasswordForum(forum_name), password, salt)
 
             if password == db_password:
                 if forum_name not in forum_list:
@@ -68,8 +68,10 @@ def create(user):
 
             # We encode the password
             # We are going to use Fernet for symetric encription
-            ciphered_password = cipher.data_encryption(pass1, pass1)
-            forum_data = [forum_name, ciphered_password]
+            salt = cipher.generate_salt()
+            ciphered_password = cipher.data_encryption(pass1, pass1, salt)
+            encoded_salt = cipher.encode_salt(salt)
+            forum_data = [forum_name, ciphered_password, encoded_salt]
             # We leave the while pass1 != pass2 loop
             # We leave the while True loop
             break
@@ -77,7 +79,7 @@ def create(user):
             print('Sorry that forum name is already in use')
 
     # We create the forum
-
+    print(forum_data)
     res = user.connectionDb.insertForum(forum_data, user.email)
     if res == 0:
         print('Forum has been created successfully')

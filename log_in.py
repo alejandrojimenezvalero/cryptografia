@@ -21,7 +21,9 @@ def log(user):
                 password = input()
 
                 # Check if the password is correct
-                db_password = cipher.data_decryption(user.connectionDb.fetchPasswordUser(user.email), password)
+                salt = cipher.decode_salt(user.connectionDb.fetchUserSalt(user.email))
+
+                db_password = cipher.data_decryption(user.connectionDb.fetchPasswordUser(user.email), password, salt)
 
                 if password == db_password:
                     forums_menu.start(user)

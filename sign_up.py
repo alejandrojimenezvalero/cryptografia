@@ -1,8 +1,7 @@
 import cipher
 import re
 import time
-
-
+import base64
 def sign(user):
     print('You are now trying to sign up, if u want exit, please type \'!exit\'')
     time.sleep(1)
@@ -37,8 +36,10 @@ def sign(user):
             # We are going to use Fernet for symmetric encryption
             if pass1 == -1:
                 return -1
-            ciphered_password = cipher.data_encryption(pass1, pass1)
-            data = [name, sec_name, user.email, ciphered_password]
+            salt = cipher.generate_salt()
+            ciphered_password = cipher.data_encryption(pass1, pass1, salt)
+            encoded_salt = cipher.encode_salt(salt)
+            data = [name, sec_name, user.email, ciphered_password, encoded_salt]
             # We leave the while pass1 != pass2 loop
             # We leave the while True loop
             break

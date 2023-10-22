@@ -1,19 +1,18 @@
 import keyboard
+import sqlite3
 
-# Función para deshabilitar la entrada de teclado
-def bloquear_entrada_teclado():
-    print("Ejecutando una acción... Entrada de teclado bloqueada.")
-    keyboard.hook(lambda e: keyboard.block_key(e.name))
+# Conectarse a la base de datos
+conn = sqlite3.connect('local_database.db')
+cursor = conn.cursor()
 
-    # Simulación de una acción que tarda un tiempo en completarse
-    import time
-    time.sleep(10)
+# Seleccionar todas las filas de la tabla User
+cursor.execute("SELECT * FROM User")
+rows = cursor.fetchall()
 
-    # Restaurar la entrada de teclado
-    keyboard.unhook_all()
-    print("Acción completada. Entrada de teclado restaurada.")
+# Imprimir todas las filas
+for row in rows:
+    print(row)
 
-# Ejemplo de uso
-message = input()
-bloquear_entrada_teclado()
-mesage = input()
+# Cerrar la conexión
+conn.close()
+
