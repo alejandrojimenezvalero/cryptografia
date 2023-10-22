@@ -73,7 +73,7 @@ class dbConnection():
         mutex.acquire()
         try:
             cursor = self.con.cursor()
-            query = self.selectQuery("INSERT INTO Messages (Message, id_user, id_forum) VALUES (@, @, @)")
+            query = self.selectQuery("INSERT INTO Messages (Message, id_user, id_forum, Salt) VALUES (@, @, @, @)")
             cursor.execute(query, data)
             self.con.commit()
         finally:
@@ -203,7 +203,7 @@ class dbConnection():
             forum_id = cursor.fetchone()[0]
 
             # We get the name and second name of the user who wrote the message
-            query = self.selectQuery("SELECT m.Message, u.Name, u.Second_Name "
+            query = self.selectQuery("SELECT m.Message, m.Salt, u.Name, u.Second_Name "
                                      "FROM Messages m "
                                      "JOIN User u ON m.id_user = u.id_user "
                                      "WHERE m.id_forum = @")

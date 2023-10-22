@@ -48,19 +48,19 @@ def encode_salt(salt):
 def decode_salt(encoded_salt):
     return base64.b64decode(encoded_salt.encode())
 
-def data_encryption(password, key, salt):
+def data_encryption(data, key, salt):
     k = key.encode()
     cipher_suite = initialize_data(k, salt)
-    encrypted_data = cipher_suite.encrypt(password.encode()).decode()
+    encrypted_data = cipher_suite.encrypt(data.encode()).decode()
     return encrypted_data
 
 
-def data_decryption(encrypted_value, key, salt):
+def data_decryption(data, key, salt):
     # We fetch de password salt
     k = key.encode()
     cipher_suite = initialize_data(k, salt)
     try:
-        decrypted_data = cipher_suite.decrypt(encrypted_value.encode()).decode()
+        decrypted_data = cipher_suite.decrypt(data.encode()).decode()
         return decrypted_data
     except:
         return -1

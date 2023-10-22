@@ -6,7 +6,7 @@ conn = sqlite3.connect('local_database.db')
 cursor = conn.cursor()
 
 # Seleccionar todas las filas de la tabla User
-cursor.execute("SELECT * FROM User")
+cursor.execute("SELECT * FROM Messages")
 rows = cursor.fetchall()
 
 # Imprimir todas las filas

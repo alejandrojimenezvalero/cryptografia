@@ -1,7 +1,7 @@
 import threading
 import time
 import keyboard
-
+import cipher
 
 def showBdMessages(user, mutex, exit_flag):
     print("Showing the new messages of the forum...")
@@ -13,10 +13,12 @@ def showBdMessages(user, mutex, exit_flag):
             user.connectionDb.update0(mutex)
             db_messages = user.connectionDb.showMessages(user.usingForum, mutex)
             for i in range(last_shown_index, len(db_messages)):
-                message, name, second_name = db_messages[i]
-                if (message, name, second_name) not in shown_messages:
-                    print(f"{name} {second_name}: {message}\n")
-                    shown_messages.add((message, name, second_name))
+                message, salt, name, second_name= db_messages[i]
+                decoded_salt = cipher.decode_salt(salt)
+                decoded_message = cipher.data_decryption(message,user.cypherKeyForum, decoded_salt)
+                if (decoded_message, name, second_name) not in shown_messages:
+                    print(f"{name} {second_name}: {decoded_message}\n")
+                    shown_messages.add((decoded_message, name, second_name))
             last_shown_index = len(db_messages)
         except:
             exit_flag.set()
@@ -27,7 +29,10 @@ def block_while_insert(user, message, mutex):
 
     id_user = user.connectionDb.consultIdUser(user.email, mutex)
     id_forum = user.connectionDb.consultIdForum(user.usingForum, mutex)
-    data = [message, id_user, id_forum]
+    salt = cipher.generate_salt()
+    ciphered_message = cipher.data_encryption(message, user.cypherKeyForum, salt)
+    encoded_salt = cipher.encode_salt(salt)
+    data = [ciphered_message, id_user, id_forum, encoded_salt]
     user.connectionDb.insertMessage(data, mutex)
 
     keyboard.unhook_all()
