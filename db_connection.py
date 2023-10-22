@@ -59,7 +59,6 @@ class dbConnection():
         try:
             cursor = self.con.cursor()
             query = self.selectQuery("INSERT INTO Forums (Name, Password, Salt) VALUES (@, @, @)")
-            print(query, data)
             cursor.execute(query, data)
             self.con.commit()
             self.joinUserForum(email, data[0])

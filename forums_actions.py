@@ -79,7 +79,6 @@ def create(user):
             print('Sorry that forum name is already in use')
 
     # We create the forum
-    print(forum_data)
     res = user.connectionDb.insertForum(forum_data, user.email)
     if res == 0:
         print('Forum has been created successfully')

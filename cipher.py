@@ -64,11 +64,3 @@ def data_decryption(encrypted_value, key, salt):
         return decrypted_data
     except:
         return -1
-
-
-salt = generate_salt()
-print(salt)
-encoded_salt = encode_salt(salt)
-print(encoded_salt)
-decoded_salt = decode_salt(encoded_salt)
-print(decoded_salt)
