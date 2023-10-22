@@ -76,6 +76,8 @@ class dbConnection():
             query = self.selectQuery("INSERT INTO Messages (Message, id_user, id_forum, Salt) VALUES (@, @, @, @)")
             cursor.execute(query, data)
             self.con.commit()
+        except:
+            print("Message exceeds app capacity")
         finally:
             mutex.release()
         return 0
