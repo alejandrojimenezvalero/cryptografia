@@ -15,7 +15,8 @@ cursor.execute('''
         Name TEXT NOT NULL CHECK(LENGTH(Name) <= 15),
         Second_Name TEXT CHECK(LENGTH(Second_Name) <= 15),
         Email TEXT CHECK(LENGTH(Second_Name) <= 30),
-        Password TEXT CHECK(LENGTH(Password) <= 100)
+        Password TEXT CHECK(LENGTH(Password) <= 100),
+        Salt TEXT CHECK(LENGTH(Salt) <= 24)
     )
 ''')
 
@@ -23,7 +24,8 @@ cursor.execute('''
     CREATE TABLE IF NOT EXISTS Forums (
         id_forum INTEGER PRIMARY KEY AUTOINCREMENT,
         Name TEXT NOT NULL CHECK(LENGTH(Name) <= 15),
-        Password TEXT CHECK(LENGTH(Password) <= 100)
+        Password TEXT CHECK(LENGTH(Password) <= 100),
+        Salt TEXT CHECK(LENGTH(Salt) <= 24)
     )
 ''')
 
@@ -42,6 +44,7 @@ cursor.execute('''
         Message TEXT CHECK(LENGTH(Message) <= 200) NOT NULL,
         id_user INTEGER,
         id_forum INTEGER,
+        Salt TEXT CHECK(LENGTH(Salt) <= 24),
         FOREIGN KEY (id_user) REFERENCES User(id_user) ON DELETE SET NULL,
         FOREIGN KEY (id_forum) REFERENCES Forum(id_forum) ON DELETE CASCADE
     )

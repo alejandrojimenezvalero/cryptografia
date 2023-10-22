@@ -1,16 +1,18 @@
 import cipher
 import re
+import time
 
 
 def sign(user):
     print('You are now trying to sign up, if u want exit, please type \'!exit\'')
+    time.sleep(1)
     data = None
-    print('Name: ')
+    print('Name (max 15 chars): ')
     name = input()
 
-    print('Second Name: ')
+    print('Second Name (max 15 chars): ')
     sec_name = input()
-    print('Email: ')
+    print('Email (max 30 chars): ')
     user.email = input()
 
     while user.email != '!exit':
@@ -21,6 +23,7 @@ def sign(user):
         while not re.match(regex, user.email):
             if not re.match(regex, user.email):
                 print('The email doesn\'t follow the required parameters')
+                time.sleep(1)
                 print('Email:')
             user.email = input()
 
@@ -28,33 +31,27 @@ def sign(user):
 
         if not user.connectionDb.fetchUser(user.email):
             pass1, pass2 = 0, 1
-            while pass1 != pass2:
-                print('Enter the password for your account (it must contain at least 1 mayus, 1 digit, '
-                      '1 of the following symbols ($,%,&,@) :')
-                pass1 = input()
-                pass1 = cipher.check_password(pass1)
+            pass1 = cipher.check_password(pass1, pass2)
 
-                print('Confirm your password:')
-                pass2 = input()
-                if pass1 != pass2:
-                    print('The passwords doesn\'t match')
-                else:
-                    # We encode the password
-                    # We are going to use Fernet for symetric encription
-                    ciphered_password = cipher.data_encryption(pass1, pass1)
-                    data = [name, sec_name, user.email, ciphered_password]
-                    # We leave the while pass1 != pass2 loop
-                    break
+            # We encode the password
+            # We are going to use Fernet for symmetric encryption
+            if pass1 == -1:
+                return -1
+            ciphered_password = cipher.data_encryption(pass1, pass1)
+            data = [name, sec_name, user.email, ciphered_password]
+            # We leave the while pass1 != pass2 loop
             # We leave the while True loop
             break
         else:
             print('Sorry that email name is already in use, you should try log in, type !exit to go back')
+            time.sleep(1)
             print('Email: ')
         user.email = input()
 
     if user.email != '!exit':
 
-        user.connectionDb.insertUser(data)
-
-        print('Account has been created successfully')
+        res = user.connectionDb.insertUser(data)
+        if res == 0:
+            print('Account has been created successfully')
+        time.sleep(1)
     return -1

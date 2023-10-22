@@ -1,4 +1,5 @@
 import forums_actions
+import time
 
 
 def start(user):
@@ -6,9 +7,11 @@ def start(user):
     # First we have to show all the Forums the user has access to
     while True:
         print('You have access to the following forums:')
+        time.sleep(1)
 
         # We show the forums
         forum_list = user.connectionDb.showForums(user.email)
+        time.sleep(1)
 
         print('What do you want to do?\n'
               + '1. If you want to access a forum, please type !access\n'
@@ -30,6 +33,7 @@ def start(user):
             if res == 1:
                 # if res==1, you come back from access or create, either ways you stay on the forum menu
                 print('Welcome back to the forum menu.')
+                time.sleep(1)
                 break
             elif res == -1:
                 # if res==-1, you have entered a wrong password, and you must log_out automatically

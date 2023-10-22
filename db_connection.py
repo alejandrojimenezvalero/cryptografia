@@ -43,20 +43,30 @@ class dbConnection():
 
     def insertUser(self, data):
         """We insert a user in the database"""
-        cursor = self.con.cursor()
-        query = self.selectQuery("INSERT INTO User (Name, Second_Name, Email, Password) VALUES (@, @, @, @)")
-        cursor.execute(query, data)
-        self.con.commit()
-        return 0
+        try:
+            cursor = self.con.cursor()
+            query = self.selectQuery("INSERT INTO User (Name, Second_Name, Email, Password) VALUES (@, @, @, @)")
+            cursor.execute(query, data)
+            self.con.commit()
+            return 0
+        except:
+            print("The length of your name, second name or email exceed the maximum length allowed")
+            return -1
+
 
     def insertForum(self, data, email):
         """We insert a Forum in the database"""
-        cursor = self.con.cursor()
-        query = self.selectQuery("INSERT INTO Forums (Name, Password) VALUES (@, @)")
-        cursor.execute(query, data)
-        self.con.commit()
-        self.joinUserForum(email, data[0])
-        return 0
+        try:
+            cursor = self.con.cursor()
+            query = self.selectQuery("INSERT INTO Forums (Name, Password) VALUES (@, @)")
+            cursor.execute(query, data)
+            self.con.commit()
+            self.joinUserForum(email, data[0])
+            return 0
+        except:
+            print("The length of the name, password exceed the maximum length allowed")
+            return -1
+
 
     def insertMessage(self, data, mutex):
         """We insert the message a user sent to a forum"""

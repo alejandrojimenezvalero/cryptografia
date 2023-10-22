@@ -5,6 +5,7 @@ import cipher
 
 def log(user):
     print('You are now trying to log in, if u want exit, please type \'!exit\'')
+    time.sleep(1)
     # We add a counter to so that the user can only try the password 3 times
     c = 3
     while user.email != '!exit':
@@ -29,10 +30,11 @@ def log(user):
                     c -= 1
                     print('Wrong password, please try again:')
 
-            print('Sorry you have exhausted your 3 attempts, you are being redirecting to the home page')
-            # We add 5 seconds of time sleep so the brute force algoritm it's not efficient
+            print('Sorry you have exhausted your 3 attempts, you are being redirected to the home page')
+            # We add 5 seconds of time sleep so the brute force algorithm it's not efficient
             time.sleep(5)
             return -1
         else:
             print('User doesn\'t exist')
-        return -1
+            time.sleep(1)
+            return -1
