@@ -4,11 +4,14 @@ import sign_up
 
 def createApp():
 
-    print('Would you like to chat online or localhost?')
+    print('Would you like to chat online (temporary unavailable) or localhost?')
     option = input()
-    while option != 'online' and option != 'localhost':
+    while option != 'localhost':
+        if option == 'online':
+            print('Sorry the online version is temporary unavailable')
         print('Please, type \'localhost\' or \'online\'')
         option = input()
+
 
     print('Welcome ForumLand, what do you want to do?\n'
           + '1. If you want to Sign Up, please type \'S\'\n'

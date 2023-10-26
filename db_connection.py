@@ -205,7 +205,7 @@ class dbConnection():
             forum_id = cursor.fetchone()[0]
 
             # We get the name and second name of the user who wrote the message
-            query = self.selectQuery("SELECT m.Message, m.Salt, u.Name, u.Second_Name "
+            query = self.selectQuery("SELECT m.id_message, m.Message, m.Salt, u.Name, u.Second_Name "
                                      "FROM Messages m "
                                      "JOIN User u ON m.id_user = u.id_user "
                                      "WHERE m.id_forum = @")

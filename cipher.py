@@ -33,7 +33,7 @@ def initialize_data(key, salt):
         algorithm=hashes.SHA256(),
         length=32,
         salt=salt,
-        iterations=480000,
+        iterations=100000,
     )
     k = base64.urlsafe_b64encode(kdf.derive(key))
     cipher_suite = Fernet(k)

@@ -3,19 +3,34 @@ import sqlite3
 con = sqlite3.connect('local_database.db')
 
 cursor = con.cursor()
-"""
-data = ['Edu', 'Al', 'AMDK', 'sadnas']
-data2= ['Edu', 'Al', 'AMDKdsad', 'sadnas']
-consult = "INSERT INTO User (Name, Second_Name, Email, Password) VALUES (?, ?, ?, ?)"
-cursor.execute(consult, data)
-cursor.execute(consult, data2)
-"""
 cursor.execute("SELECT * FROM User")
-filas = cursor.fetchall()
-
+rows = cursor.fetchall()
+print('------------User Table-------------')
 # Imprimir los resultados por pantalla
-for fila in filas:
-    print(fila)
+for row in rows:
+    print(row)
+print('-----------------------------------')
+cursor.execute("SELECT * FROM Forums")
+rows = cursor.fetchall()
+print('------------Forum Table------------')
+# Imprimir los resultados por pantalla
+for row in rows:
+    print(row)
+print('-----------------------------------')
+cursor.execute("SELECT * FROM UsersForums")
+rows = cursor.fetchall()
+print('---------UsersForums Table----------')
+# Imprimir los resultados por pantalla
+for row in rows:
+    print(row)
+print('-----------------------------------')
+cursor.execute("SELECT * FROM Messages")
+rows = cursor.fetchall()
+print('----------Messages Table-----------')
+# Imprimir los resultados por pantalla
+for row in rows:
+    print(row)
+print('-----------------------------------')
 
 
 con.close()

@@ -37,6 +37,8 @@ def log(user):
             time.sleep(5)
             return -1
         else:
-            print('User doesn\'t exist')
+            if user.email != '!exit':
+                print('User doesn\'t exist')
+            user.email = None
             time.sleep(1)
             return -1

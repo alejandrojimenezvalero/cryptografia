@@ -9,16 +9,15 @@ def showBdMessages(user, mutex, exit_flag):
     last_shown_index = 0
     while not exit_flag.is_set():
         try:
-            time.sleep(0.01)
             user.connectionDb.update0(mutex)
             db_messages = user.connectionDb.showMessages(user.usingForum, mutex)
             for i in range(last_shown_index, len(db_messages)):
-                message, salt, name, second_name= db_messages[i]
+                id, message, salt, name, second_name = db_messages[i]
                 decoded_salt = cipher.decode_salt(salt)
                 decoded_message = cipher.data_decryption(message,user.cypherKeyForum, decoded_salt)
-                if (decoded_message, name, second_name) not in shown_messages:
+                if id not in shown_messages:
                     print(f"{name} {second_name}: {decoded_message}\n")
-                    shown_messages.add((decoded_message, name, second_name))
+                    shown_messages.add(id)
             last_shown_index = len(db_messages)
         except:
             exit_flag.set()
@@ -47,6 +46,8 @@ def waitUserMessage(user, mutex, exit_flag):
             if message.lower() == "!exit":
                 exit_flag.set()
             else:
+                if len(message) > 79:
+                    message = message[:79]
                 block_while_insert(user, message, mutex)
         except:
             exit_flag.set()

@@ -56,7 +56,9 @@ def create(user):
         forum_name = input()
 
         # We check if the name is already in use
-        if not user.connectionDb.fetchForum(forum_name):
+        if  forum_name == '!exit':
+            return -1
+        elif not user.connectionDb.fetchForum(forum_name):
             print('Create the password of the forum:')
 
             pass1, pass2 = 0, 1
