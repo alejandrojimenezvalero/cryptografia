@@ -1,28 +1,33 @@
 from user_log import User
 import log_in
 import sign_up
+import time
 
 def createApp():
-
-    print('Would you like to chat online (temporary unavailable) or localhost?')
-    option = input()
-    while option != 'localhost':
-        if option == 'online':
-            print('Sorry the online version is temporary unavailable')
-        print('Please, type \'localhost\' or \'online\'')
+    try:
+        print('Would you like to chat online (temporary unavailable) or localhost?')
         option = input()
+        while option != 'localhost':
+            if option == 'online':
+                print('Sorry the online version is temporary unavailable')
+            print('Please, type \'localhost\' or \'online\'')
+            option = input()
 
 
-    print('Welcome ForumLand, what do you want to do?\n'
-          + '1. If you want to Sign Up, please type \'S\'\n'
-          + '2. If you want to Log In, please type \'L\'\n'
-          + '3. If you want to Exit, please type \'E\'\n')
+        print('Welcome to echoSpace, what do you want to do?\n'
+              + '1. If you want to Sign Up, please type \'S\'\n'
+              + '2. If you want to Log In, please type \'L\'\n'
+              + '3. If you want to Exit, please type \'E\'\n')
 
-    # We establish connection with the database
-    user = User(option)
+        # We establish connection with the database
+        user = User(option)
 
-    action = input().lower()
-    res = None
+        action = input().lower()
+        res = None
+    except KeyboardInterrupt:
+        print('Closing echoSpace')
+        time.sleep(3)
+        return -1
     try:
         while action != 'e':
             if action == 'l':
@@ -46,4 +51,6 @@ def createApp():
     except KeyboardInterrupt:
         # We close the connection with the database
         user.connectionDb.closeConnection()
+        print('Closing echoSpace')
+        time.sleep(3)
         return -1

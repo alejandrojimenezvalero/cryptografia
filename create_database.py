@@ -14,7 +14,7 @@ cursor.execute('''
         id_user INTEGER PRIMARY KEY AUTOINCREMENT,
         Name TEXT NOT NULL CHECK(LENGTH(Name) <= 15),
         Second_Name TEXT CHECK(LENGTH(Second_Name) <= 15),
-        Email TEXT CHECK(LENGTH(Second_Name) <= 30),
+        Email TEXT UNIQUE CHECK(LENGTH(Second_Name) <= 30),
         Password TEXT CHECK(LENGTH(Password) <= 100),
         Salt TEXT CHECK(LENGTH(Salt) <= 24)
     )
@@ -23,7 +23,7 @@ cursor.execute('''
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS Forums (
         id_forum INTEGER PRIMARY KEY AUTOINCREMENT,
-        Name TEXT NOT NULL CHECK(LENGTH(Name) <= 15),
+        Name TEXT NOT NULL UNIQUE CHECK(LENGTH(Name) <= 15),
         Password TEXT CHECK(LENGTH(Password) <= 100),
         Salt TEXT CHECK(LENGTH(Salt) <= 24)
     )
