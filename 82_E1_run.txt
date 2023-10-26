@@ -1,0 +1,39 @@
+El programa tiene dos posibles vías de ejecución, chat online o chat en local.
+La funcionalidad del chat online está implementada pero la base de datos utilizada expiró y para esta práctica hemos decidido no incluir esta vía.
+
+Al no tener una interfaz, el programa funciona gracias a inputs introducidos en la consola
+Los pasos para la correcta ejecución del programa son los siguientes:
+
+    1. Escribe localhost en la terminal
+    2. A continuación, tendrá 3 opciones:
+        2.1 Para crear una cuenta, esciba por terminal 's'
+            ·Ahora deberá introducir:
+                Un nombre de 15 caracteres máximo
+                Un appellido de 15 caracteres máximo
+                Un email de 30 caracteres máximo y que siga la expresión regular pertinente
+                Una contraseña que siga unos parámetros establecido (deberá repetir la contraseña para poder avanzar)
+        2.2 Para acceder a una cuenta existente, esciba por la terminal 'l'
+            La aplicación le pedirá el correo utilizado su contraseña
+        2.3 Para salir de la aplicación, escriba por la terminal 'e'
+            Se cerrará el programa y la conexión con la base de datos
+
+    3. Una vez haya iniciado sesíon, estará en el menú de foros, tendrá 3 opciones:
+        3.1 Crear un foro
+            Para crear un foro, deberá introducir el comando '!create'
+            La aplicación le pedirá un nombre de un foro que no esté en uso y una contraseña para el mismo
+        3.2 Acceder a un foro
+            Para acceder a un foro, deberá introducir el comando '!access'
+            Tendrá que introducir el nombre del foro al que quiere acceder y su contraseña
+        3.3 Salir al menú principal
+            Para salir al menú principal, deberá introducir el comando '!exit'
+
+    4. Una vez haya accedido al foro en cuestión, se encontrará en el chat en vivo del foro
+       Primeramente aparecerán todos los mensajes que se han escrito en el foro
+       Los mensajes nuevos que otros usuarios escriban aparecerán en tiempo real
+       Usted podrá escribir mensajes en tiempo real y comunicarse con otras personas (en esta primera entrega solo podrá comunicarse con otras terminales)
+       Si desea salir del chat, escriba el comando !exit
+
+    Cualquier iterrupción de teclado en cualquier punto de ejecución, cerrará la conexión con la base de datos y así; hacer un uso eficiente de los recursos,
+        evitar posibles problemas de seguridad y para realizar una correcta gestión de transacciones y bloqueos (finalizar transacciones pendientes y liberar
+        bloqueos, garantizando así integridad en la base de datos y evitando problemas de concurrencia). Además, como la base de datos online que hemos utilizado
+        (freesqldatabase.com) tiene un número limitado de conexiones disponible, cerraremos estas conexiones y así no se agotarán los límites disponibles.
