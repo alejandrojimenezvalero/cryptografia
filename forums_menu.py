@@ -1,9 +1,10 @@
+"""This module manages the forum menu display for users, showcasing the forums they are part of"""
 import forums_actions
 import time
 
 
 def start(user):
-
+    """This function allows the user to create a new forum or access an already created one"""
     # First we have to show all the Forums the user has access to
     while True:
         print('You have access to the following forums:')

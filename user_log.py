@@ -1,8 +1,9 @@
-"""This module allows us to manage the user log"""
+"""This module manages the user log"""
 from db_connection import dbConnection
 
 
 class User:
+    """This class manages all the important information of execution time related to the user"""
 
     def __init__(self, option):
         self._con = dbConnection(option)

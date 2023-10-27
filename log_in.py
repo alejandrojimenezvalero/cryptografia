@@ -1,9 +1,12 @@
+"""This module handles the log-in functionality for the application users"""
 import time
 import forums_menu
 import cipher
 
 
 def log(user):
+    """This function manages the log-in option"""
+
     print('You are now trying to log in, if u want exit, please type \'!exit\'')
     time.sleep(1)
     # We add a counter to so that the user can only try the password 3 times

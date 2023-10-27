@@ -1,8 +1,12 @@
+"""This module handles the sign-up functionality for the application users"""
 import cipher
 import re
 import time
-import base64
+
+
 def sign(user):
+    """This function manages the sign-up option"""
+
     print('You are now trying to sign up, if u want exit, please type \'!exit\'')
     time.sleep(1)
     data = None

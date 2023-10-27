@@ -1,3 +1,4 @@
+"""This module conducts testing procedures for the database functionality"""
 import sqlite3
 
 con = sqlite3.connect('local_database.db')
@@ -10,6 +11,7 @@ print('------------User Table-------------')
 for row in rows:
     print(row)
 print('-----------------------------------')
+
 cursor.execute("SELECT * FROM Forums")
 rows = cursor.fetchall()
 print('------------Forum Table------------')
@@ -17,6 +19,7 @@ print('------------Forum Table------------')
 for row in rows:
     print(row)
 print('-----------------------------------')
+
 cursor.execute("SELECT * FROM UsersForums")
 rows = cursor.fetchall()
 print('---------UsersForums Table----------')
@@ -24,6 +27,7 @@ print('---------UsersForums Table----------')
 for row in rows:
     print(row)
 print('-----------------------------------')
+
 cursor.execute("SELECT * FROM Messages")
 rows = cursor.fetchall()
 print('----------Messages Table-----------')

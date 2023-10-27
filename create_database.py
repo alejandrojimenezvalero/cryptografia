@@ -1,3 +1,4 @@
+"""This module handles the creation of the database and necessary tables"""
 import sqlite3
 
 con = sqlite3.connect('local_database.db')

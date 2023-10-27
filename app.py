@@ -1,9 +1,11 @@
+"""This module initializes the application and sets up the necessary components"""
 from user_log import User
 import log_in
 import sign_up
 import time
 
 def createApp():
+    """This function contains the precise logic for initializing the app"""
     try:
         print('Would you like to chat online (temporary unavailable) or localhost?')
         option = input()

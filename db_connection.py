@@ -1,12 +1,17 @@
+"""
+This module manages the establishment of a connection with the database
+It handles the configuration, connection, and all interactions with the database, along with other related operations
+"""
 import os
 import mysql.connector
 import sqlite3
 
 
 class dbConnection():
+    """This class establishes the connection with the database and manages all the operations related to it"""
 
     def __init__(self, option):
-        # We add this self.option parameter because some querys have differences between qlite3 and mysql-connector
+        # We add this self.option parameter because some query's have differences between sqlite3 and mysql-connector
         self.option = option
         if self.option == 'localhost':
             self.con = sqlite3.connect('local_database.db', check_same_thread=False)
@@ -21,6 +26,7 @@ class dbConnection():
             )
 
     def selectQuery(self, query):
+        """This function selects the correct syntax of the query depending on the chosen option"""
         if self.option == 'localhost':
             return query.replace('@', '?')
         elif self.option == 'online':
@@ -28,7 +34,7 @@ class dbConnection():
 
 
     def closeConnection(self):
-        """We close connection with the database"""
+        """This function closes connection with the database"""
         self.con.close()
         return 0
 
@@ -42,7 +48,7 @@ class dbConnection():
         return 0
 
     def insertUser(self, data):
-        """We insert a user in the database"""
+        """This function inserts a user in the database"""
         try:
             cursor = self.con.cursor()
             query = self.selectQuery("INSERT INTO User (Name, Second_Name, Email, Password, Salt) VALUES (@, @, @, @, @)")
@@ -55,7 +61,7 @@ class dbConnection():
 
 
     def insertForum(self, data, email):
-        """We insert a Forum in the database"""
+        """This function inserts a Forum in the database"""
         try:
             cursor = self.con.cursor()
             query = self.selectQuery("INSERT INTO Forums (Name, Password, Salt) VALUES (@, @, @)")
@@ -69,7 +75,7 @@ class dbConnection():
 
 
     def insertMessage(self, data, mutex):
-        """We insert the message a user sent to a forum"""
+        """This function inserts the message a user sent to a forum"""
         mutex.acquire()
         try:
             cursor = self.con.cursor()
@@ -83,7 +89,7 @@ class dbConnection():
         return 0
 
     def joinUserForum(self, email, forum_name):
-        """We add the relationship User-Forum"""
+        """This function adds the relationship User-Forum"""
 
         cursor = self.con.cursor()
         cursor.execute(self.selectQuery("SELECT id_user FROM User WHERE Email = @"), (email,))
@@ -100,7 +106,7 @@ class dbConnection():
         return 0
 
     def fetchUser(self, email):
-        """We check if a user exists or not"""
+        """This function checks if a user exists or not"""
         cursor = self.con.cursor()
         query = self.selectQuery("SELECT * FROM User WHERE Email = @")
         cursor.execute(query, (email,))
@@ -111,7 +117,7 @@ class dbConnection():
             return False
 
     def fetchPasswordUser(self, email):
-        """We fetch the password of the user"""
+        """This function fetchs the password of the user"""
         cursor = self.con.cursor()
         query = self.selectQuery("SELECT Password FROM User WHERE Email = @")
         cursor.execute(query, (email,))
@@ -121,7 +127,7 @@ class dbConnection():
         else:
             return None
     def fetchUserSalt(self, email):
-        """We fetch the password's salt of the user"""
+        """This function fetchs the password's salt of the user"""
         cursor = self.con.cursor()
         query = self.selectQuery("SELECT Salt FROM User WHERE Email = @")
         cursor.execute(query, (email,))
@@ -132,7 +138,7 @@ class dbConnection():
             return None
 
     def fetchForum(self, forum_name):
-        """We fetch if a forum exists or not"""
+        """This function fetchs if a forum exists or not"""
         cursor = self.con.cursor()
         query = self.selectQuery("SELECT * FROM Forums WHERE Name = @")
         cursor.execute(query, (forum_name,))
@@ -143,7 +149,7 @@ class dbConnection():
             return False
 
     def fetchPasswordForum(self, forum_name):
-        """We fetch the password of the forum"""
+        """This function fetches the password of the forum"""
         cursor = self.con.cursor()
         query = self.selectQuery("SELECT Password FROM Forums WHERE Name = @")
         cursor.execute(query, (forum_name,))
@@ -154,7 +160,7 @@ class dbConnection():
             return None
 
     def fetchForumSalt(self, forum_name ):
-        """We fetch the password' salt of the forum"""
+        """This function fetches the password's salt of the forum"""
         cursor = self.con.cursor()
         query = self.selectQuery("SELECT Salt FROM Forums WHERE Name = @")
         cursor.execute(query, (forum_name,))
@@ -164,7 +170,7 @@ class dbConnection():
         else:
             return None
     def showForums(self, email):
-        """We show all the forums the user has access to"""
+        """This function shows all the forums the user has access to"""
         cursor = self.con.cursor()
 
         forum_list = []
@@ -196,7 +202,7 @@ class dbConnection():
         return forum_list
 
     def showMessages(self, forum_name, mutex):
-        """We get all the messages of the forum and who wrote them"""
+        """This function gets all the messages of the forum and who wrote them"""
         mutex.acquire()
         try:
             cursor = self.con.cursor()
@@ -217,6 +223,7 @@ class dbConnection():
         return result
 
     def consultIdUser(self, email, mutex):
+        """This function consults the id of a user"""
         mutex.acquire()
         try:
             cursor = self.con.cursor()
@@ -228,6 +235,7 @@ class dbConnection():
         return user_id
 
     def consultIdForum(self, forum_name, mutex):
+        """This function consults the id of a forum"""
         mutex.acquire()
         try:
             cursor = self.con.cursor()
@@ -238,31 +246,3 @@ class dbConnection():
             mutex.release()
 
         return forum_id
-"""
-def fetch_data(self, table, condition_column, condition_value):
-    "Función genérica para recuperar datos de la base de datos"
-    cursor = self.con.cursor()
-    query = f"SELECT * FROM {table} WHERE {condition_column} = @"
-    cursor.execute(query, (condition_value,))
-    result = cursor.fetchall()
-    if len(result) > 0:
-        return result[0][0] if result[0][0] else True
-    else:
-        return None
-
-def fetchUser(self, email):
-    "Comprobamos si existe un usuario o no"
-    return self.fetch_data("User", "Email", email)
-
-def fetchPasswordUser(self, email):
-    "Recuperamos la contraseña del usuario"
-    return self.fetch_data("User", "Email", email)
-
-def fetchForum(self, forum_name):
-    "Comprobamos si existe un foro o no"
-    return self.fetch_data("Forums", "Name", forum_name)
-
-def fetchPasswordForum(self, forum_name):
-    "Recuperamos la contraseña del foro"
-    return self.fetch_data("Forums", "Name", forum_name)
-"""

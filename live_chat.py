@@ -1,9 +1,14 @@
+"""
+This module manages the live chat feature.
+Enables concurrent communication between users through two separate threads of execution
+"""
 import threading
 import time
 import keyboard
 import cipher
 
 def showBdMessages(user, mutex, exit_flag):
+    """This function shows the messages of the forum"""
     print("Showing the new messages of the forum...")
     shown_messages = set()
     last_shown_index = 0
@@ -24,6 +29,7 @@ def showBdMessages(user, mutex, exit_flag):
 
 
 def block_while_insert(user, message, mutex):
+    """This function blocks the input option while the message is in the sending process"""
     keyboard.hook(lambda e: keyboard.block_key(e.name))
 
     id_user = user.connectionDb.consultIdUser(user.email, mutex)
@@ -37,10 +43,10 @@ def block_while_insert(user, message, mutex):
     keyboard.unhook_all()
 
 def waitUserMessage(user, mutex, exit_flag):
+    """This function listens for user input from the console"""
     time.sleep(1)
     while not exit_flag.is_set():
         # We add a time.sleep of 0.1 seconds, so it doesn't interrupt any
-        #time.sleep(2)
         try:
             message = input()
             if message.lower() == "!exit":
@@ -55,6 +61,7 @@ def waitUserMessage(user, mutex, exit_flag):
 
 
 def chat(user):
+    """Manages the execution flow using two threads for concurrent operations"""
     exit_flag = threading.Event()
     mutex = threading.Lock()
 

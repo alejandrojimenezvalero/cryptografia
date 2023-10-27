@@ -1,10 +1,11 @@
+"""This module facilitates the creation or access of a forum"""
 import forum_chat
-import re
 import cipher
 import time
 
 
 def access(user, forum_list):
+    """This function manages the access logic to a forum"""
     while True:
         print('Please, enter the  name of the forum you want to access')
         forum_name = input()
@@ -50,6 +51,7 @@ def access(user, forum_list):
 
 
 def create(user):
+    """This function manages the creation logic of a forum"""
     forum_data = []
     while True:
         print('Please, enter the  name of the forum you want to create:')
