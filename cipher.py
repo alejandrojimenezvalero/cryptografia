@@ -159,12 +159,6 @@ def encrypt_and_sign(message, recipient_public_key, sender_private_key):
         hashes.SHA256()
     )
 
-    # Combinar el mensaje cifrado y la firma
-    print(ciphertext)
-    print(type(ciphertext))
-    print(signature)
-    print(type(signature))
-
     return ciphertext, signature
 
 def verify_signature_and_decrypt(ciphertext, signature, sender_public_key_pem, recipient_private_key):
@@ -180,12 +174,6 @@ def verify_signature_and_decrypt(ciphertext, signature, sender_public_key_pem, r
     - message: Mensaje descifrado.
     """
     sender_public_key = load_public_key_from_pem(sender_public_key_pem)
-
-    print(ciphertext)
-    print(type(ciphertext))
-    print(signature)
-    print(type(signature))
-    print(type(sender_public_key))
 
     try:
         sender_public_key.verify(

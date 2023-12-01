@@ -46,7 +46,6 @@ def sign(user):
             user.private_key = cipher.generate_private_key()
             # We get the pem format of the private key
             pem_private_key = cipher.private_key_to_pem(user.private_key)
-            print(pem_private_key)
             # We cipher the pem format
             ciphered_pem_private_key = cipher.data_encryption(pem_private_key, pass1, salt)
             ciphered_password = cipher.data_encryption(pass1, pass1, salt)
