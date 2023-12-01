@@ -2,6 +2,7 @@ El programa tiene dos posibles vías de ejecución, chat online o chat en local.
 La funcionalidad del chat online está implementada pero la base de datos utilizada expiró y para esta práctica hemos decidido no incluir esta vía.
 
 Al no tener una interfaz, el programa funciona gracias a inputs introducidos en la consola
+Para el correcto funcionamiento de las transiciones, se deberá correr el programa en la terminal del ordenador, no en terminales de IDEs como Pycharm o VisualStudio.
 Los pasos para la correcta ejecución del programa son los siguientes:
 
     1. Escribe localhost en la terminal
@@ -17,14 +18,27 @@ Los pasos para la correcta ejecución del programa son los siguientes:
         2.3 Para salir de la aplicación, escriba por la terminal 'e'
             Se cerrará el programa y la conexión con la base de datos
 
-    3. Una vez haya iniciado sesíon, estará en el menú de foros, tendrá 3 opciones:
+    *NUEVO*
+        -Ahora no se podrá iniciar sesíon hasta que la entidad haya aceptado la solicitud de certificado
+        -Se deberá aceptar manualmente con el comando 'openssl ca -in ./solicitudes/n_request.pem -notext -config ./openssl_AC1-54471.cnf', siendo n el id del usuario
+        -Se deberán eliminar manualmente las solicitudes que aparecen en la carpeta 'solicitudes'
+        -Además se deberá ejecutar el script 'AC_public_keys_management.py', el cual guardará las claves publicas de cada usuario en la base de datos
+
+    3. Una vez haya iniciado sesíon, estará en el menú de foros, tendrá 4 o 5 opciones:
         3.1 Crear un foro
             Para crear un foro, deberá introducir el comando '!create'
             La aplicación le pedirá un nombre de un foro que no esté en uso y una contraseña para el mismo
         3.2 Acceder a un foro
             Para acceder a un foro, deberá introducir el comando '!access'
             Tendrá que introducir el nombre del foro al que quiere acceder y su contraseña
-        3.3 Salir al menú principal
+        3.3 Mirar el buzón de invitaciones
+            Usará el comando '!inbox'
+            Una vez dentro, aparecerán las invitaciones pertinentes
+            Se elige la invitación que se desea aceptar y saltará una notificación con la contraseña del foro
+        3.4 (OPCIONAL) Enviar invitaciones
+            Usará el comando '!invite'
+            Esta opción sólo aparecerá para los administradores de los grupos
+        3.5 Salir al menú principal
             Para salir al menú principal, deberá introducir el comando '!exit'
 
     4. Una vez haya accedido al foro en cuestión, se encontrará en el chat en vivo del foro
