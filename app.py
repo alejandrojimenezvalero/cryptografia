@@ -3,20 +3,23 @@ from user_log import User
 import log_in
 import sign_up
 import time
+from transitions import print_slow
+from display_image import show_notification_with_image
 
 def createApp():
     """This function contains the precise logic for initializing the app"""
+    #show_notification_with_image("logo.png", 7)
     try:
-        print('Would you like to chat online (temporary unavailable) or localhost?')
+        print_slow('Would you like to chat online (temporary unavailable) or localhost?')
         option = input()
         while option != 'localhost':
             if option == 'online':
                 print('Sorry the online version is temporary unavailable')
-            print('Please, type \'localhost\' or \'online\'')
+            print_slow('Please, type \'localhost\' or \'online\'')
             option = input()
 
 
-        print('Welcome to echoSpace, what do you want to do?\n'
+        print_slow('Welcome to echoSpace, what do you want to do?\n'
               + '1. If you want to Sign Up, please type \'S\'\n'
               + '2. If you want to Log In, please type \'L\'\n'
               + '3. If you want to Exit, please type \'E\'\n')

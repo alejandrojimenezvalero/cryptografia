@@ -2,3 +2,5 @@ mysql-connector-python
 cryptography
 bcrypt
 keyboard
+windows-curses
+pyfiglet

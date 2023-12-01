@@ -51,7 +51,7 @@ class dbConnection():
         """This function inserts a user in the database"""
         try:
             cursor = self.con.cursor()
-            query = self.selectQuery("INSERT INTO User (Name, Second_Name, Email, Password, Salt) VALUES (@, @, @, @, @)")
+            query = self.selectQuery("INSERT INTO User (Name, Second_Name, Email, Password, Private_key, Salt) VALUES (@, @, @, @, @, @)")
             cursor.execute(query, data)
             self.con.commit()
             return 0
@@ -59,20 +59,17 @@ class dbConnection():
             print("The length of your name, second name or email exceed the maximum length allowed")
             return -1
 
-
-    def insertForum(self, data, email):
+    def insertForum(self, data):
         """This function inserts a Forum in the database"""
         try:
             cursor = self.con.cursor()
             query = self.selectQuery("INSERT INTO Forums (Name, Password, Salt) VALUES (@, @, @)")
             cursor.execute(query, data)
             self.con.commit()
-            self.joinUserForum(email, data[0])
             return 0
         except:
             print("The length of the name, password exceed the maximum length allowed")
             return -1
-
 
     def insertMessage(self, data, mutex):
         """This function inserts the message a user sent to a forum"""
@@ -88,7 +85,7 @@ class dbConnection():
             mutex.release()
         return 0
 
-    def joinUserForum(self, email, forum_name):
+    def joinUserForum(self, email, forum_name, role):
         """This function adds the relationship User-Forum"""
 
         cursor = self.con.cursor()
@@ -98,23 +95,60 @@ class dbConnection():
         cursor.execute(self.selectQuery("SELECT id_forum FROM Forums WHERE Name = @"), (forum_name,))
         id_forum = cursor.fetchone()[0]
 
-        query = self.selectQuery("INSERT INTO UsersForums (id_user, id_forum) VALUES (@, @)")
-        data = [id_user, id_forum]
+        cursor.execute(self.selectQuery("SELECT id FROM Roles WHERE role = @"), (role,))
+        id_role = cursor.fetchone()[0]
+
+        query = self.selectQuery("INSERT INTO UsersForums (id_user, id_forum, id_role) VALUES (@, @, @)")
+        data = [id_user, id_forum, id_role]
         cursor.execute(query, data)
 
         self.con.commit()
         return 0
 
-    def fetchUser(self, email):
+    def fetchUserId(self, email):
         """This function checks if a user exists or not"""
-        cursor = self.con.cursor()
-        query = self.selectQuery("SELECT * FROM User WHERE Email = @")
-        cursor.execute(query, (email,))
-        result = cursor.fetchall()
-        if len(result) > 0:
-            return True
-        else:
-            return False
+        query = self.selectQuery("SELECT id_user FROM User WHERE Email = @")
+        try:
+            cursor = self.con.cursor()
+            cursor.execute(query, (email,))
+            result = cursor.fetchone()
+
+            if result:
+                return result[0]
+        except Exception as e:
+            print(f"Error getting user ID by email: {e}")
+
+        return None
+
+    def fetchUserNameAndSecondName(self, email):
+        """Esta función obtiene el nombre y el segundo nombre de un usuario dado su correo electrónico."""
+        query = self.selectQuery("SELECT Name, Second_name FROM User WHERE Email = @")
+        try:
+            cursor = self.con.cursor()
+            cursor.execute(query, (email,))
+            result = cursor.fetchone()
+
+            if result:
+                return result  # Retorna una tupla (Name, Second_name)
+        except Exception as e:
+            print(f"Error obteniendo el nombre y segundo nombre del usuario por correo electrónico: {e}")
+
+        return None
+
+    def fetchForumId(self, forum_name):
+        query = self.selectQuery("SELECT id_forum FROM Forums WHERE Name = @")
+
+        try:
+            cursor = self.con.cursor()
+            cursor.execute(query, (forum_name,))
+            result = cursor.fetchone()
+
+            if result:
+                return result[0]
+        except Exception as e:
+            print(f"Error getting forum ID by name: {e}")
+
+        return None
 
     def fetchPasswordUser(self, email):
         """This function fetchs the password of the user"""
@@ -126,6 +160,37 @@ class dbConnection():
             return result
         else:
             return None
+
+    def fetchPrivateKeyUser(self, email):
+        """This function fetchs the password of the user"""
+        cursor = self.con.cursor()
+        query = self.selectQuery("SELECT Private_key FROM User WHERE Email = @")
+        cursor.execute(query, (email,))
+        result = cursor.fetchall()[0][0]
+        if len(result) > 0:
+            return result
+        else:
+            return None
+
+    def fetchPublicKey(self, user_to_fetch_id):
+        try:
+            # Conectar a la base de datos
+            cursor = self.con.cursor()
+            query = self.selectQuery("SELECT public_key_pem_text FROM PublicKeys WHERE id_user = @")
+            # Consultar la clave pública del usuario en base a su ID
+            cursor.execute(query, (user_to_fetch_id,))
+            result = cursor.fetchone()
+
+            if result:
+                # Obtener la representación PEM de la clave pública
+                return result[0]
+            else:
+                print(f"No se encontró la clave pública para el usuario con ID {user_to_fetch_id}")
+                return None
+        except Exception as e:
+            print(f"Error al recuperar la clave pública: {e}")
+            return None
+
     def fetchUserSalt(self, email):
         """This function fetchs the password's salt of the user"""
         cursor = self.con.cursor()
@@ -137,7 +202,7 @@ class dbConnection():
         else:
             return None
 
-    def fetchForum(self, forum_name):
+    def fetchForumExists(self, forum_name):
         """This function fetchs if a forum exists or not"""
         cursor = self.con.cursor()
         query = self.selectQuery("SELECT * FROM Forums WHERE Name = @")
@@ -169,11 +234,88 @@ class dbConnection():
             return result
         else:
             return None
+
+    def fetchRole(self, id_user, id_forum):
+        cursor = self.con.cursor()
+
+        # Consulta para obtener el nombre del rol
+        cursor.execute(self.selectQuery('''SELECT Roles.role FROM UsersForums 
+                                            JOIN Roles ON UsersForums.id_role = Roles.id 
+                                            WHERE UsersForums.id_user = @ AND UsersForums.id_forum = @'''),
+                       (id_user, id_forum,))
+        role_name = cursor.fetchone()
+
+        return role_name[0] if role_name[0] else None
+
+    def fetchInvitations(self, id_user):
+        query = self.selectQuery('''
+            SELECT Forums.Name , Invitations.Message_invitation, Invitations.Signature, Invitations.id_sender
+            FROM Invitations
+            JOIN Forums ON Invitations.id_forum_origin = Forums.id_forum
+            JOIN User ON Invitations.id_user_destination = User.id_user
+            WHERE Invitations.id_user_destination = @''')
+
+        try:
+            cursor = self.con.cursor()
+            cursor.execute(query, (id_user,))
+            invitations = cursor.fetchall()
+            return invitations
+        except Exception as e:
+            print(f"Error fetching invitations: {e}")
+            return None
+
+    def sendInvitation(self, message, signature, user_destination_email, forum_origin_name, id_sender):
+        # Get user id from users name
+        user_destination_id = self.fetchUserId(user_destination_email)
+
+        if user_destination_id is None:
+            print("Error: User destination not found.")
+            return
+
+        # Get forum id form forums name
+        forum_origin_id = self.fetchForumId(forum_origin_name)
+
+        if forum_origin_id is None:
+            print("Error: Forum origin not found.")
+            return
+
+        query = self.selectQuery("INSERT INTO Invitations (Message_invitation, Signature, id_user_destination, id_forum_origin, id_sender) VALUES (@, @, @, @, @)")
+        values = (message, signature, user_destination_id, forum_origin_id, id_sender)
+
+        try:
+            cursor = self.con.cursor()
+            cursor.execute(query, values)
+            self.con.commit()
+            print("Invitation sent successfully.")
+        except Exception as e:
+            print(f"Error sending invitation: {e}")
+
+    def deleteInvitation(self, id_user, forum_name):
+        # Obtener el ID del foro a partir del nombre del foro
+        forum_id = self.fetchForumId(forum_name)
+
+        if forum_id is None:
+            print("Error: Forum not found.")
+            return
+
+        # Eliminar la invitación en la tabla Invitations
+        query = self.selectQuery("DELETE FROM Invitations WHERE id_user_destination = ? AND id_forum_origin = @")
+        values = (id_user, forum_id)
+
+        try:
+            cursor = self.con.cursor()
+            cursor.execute(query, values)
+            self.con.commit()
+            print("Invitation deleted successfully.")
+        except Exception as e:
+            print(f"Error deleting invitation: {e}")
+
     def showForums(self, email):
-        """This function shows all the forums the user has access to"""
+        """This function shows all the forums the user has access to and the role he has"""
         cursor = self.con.cursor()
 
         forum_list = []
+        forum_list_admin = []
 
         # We get the id from the user
         cursor.execute(self.selectQuery("SELECT id_user FROM User WHERE Email = @"), (email,))
@@ -190,16 +332,19 @@ class dbConnection():
                 for forum_id in id_forums:
                     cursor.execute(self.selectQuery("SELECT Name FROM Forums WHERE id_forum = @"), (forum_id[0],))
                     forum_name = cursor.fetchone()[0]
+                    role = self.fetchRole(id_user[0], forum_id[0])
                     if forum_name:
-                        print(f"Forum name: {forum_name}")
-                        forum_list.append(forum_name)
+                        print(f"Forum name: {forum_name} (Role: {role})")
+                        forum_list.append(forum_id[0])
+                        if role == "admin":
+                            forum_list_admin.append(forum_name)
             else:
                 print("You don\'t belong to any forum")
         else:
             print(f"There's no id associated to the email: {email}.")
             return 0
 
-        return forum_list
+        return forum_list, forum_list_admin
 
     def showMessages(self, forum_name, mutex):
         """This function gets all the messages of the forum and who wrote them"""

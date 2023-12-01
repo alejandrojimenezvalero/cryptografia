@@ -2,6 +2,7 @@
 import time
 import forums_menu
 import cipher
+from certificate_management_users import ManageCertificates
 
 
 def log(user):
@@ -17,8 +18,7 @@ def log(user):
 
         # Check if the email is in the DB and if not tell de user that he has to sign up
 
-
-        if user.connectionDb.fetchUser(user.email):
+        if user.connectionDb.fetchUserId(user.email):
             print('Please enter your password:')
             while c > 0:
                 password = input()
@@ -28,8 +28,16 @@ def log(user):
 
                 db_password = cipher.data_decryption(user.connectionDb.fetchPasswordUser(user.email), password, salt)
 
+
                 if password == db_password:
-                    forums_menu.start(user)
+                    pem_private_key = cipher.data_decryption(user.connectionDb.fetchPrivateKeyUser(user.email),
+                                                              password, salt)
+                    user.private_key = cipher.load_private_key_from_pem(pem_private_key.encode())
+                    user.id = user.connectionDb.fetchUserId(user.email)
+                    user.name, user.second_name = user.connectionDb.fetchUserNameAndSecondName(user.email)
+                    if ManageCertificates(user).check_user_is_certified():
+                        forums_menu.start(user)
+                    user.reset_attributes()
                     return -1
                 else:
                     c -= 1
@@ -38,10 +46,11 @@ def log(user):
             print('Sorry you have exhausted your 3 attempts, you are being redirected to the home page')
             # We add 5 seconds of time sleep so the brute force algorithm it's not efficient
             time.sleep(5)
+            user.reset_attributes()
             return -1
         else:
             if user.email != '!exit':
                 print('User doesn\'t exist')
-            user.email = None
             time.sleep(1)
+            user.reset_attributes()
             return -1
